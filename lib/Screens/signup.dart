@@ -22,7 +22,8 @@ class SignUpScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('BellBoard Sign Up', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+        title: const Text('BellBoard Sign Up',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
       body: Padding(
@@ -31,23 +32,22 @@ class SignUpScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Container(
-  decoration: BoxDecoration(
-    color: Colors.red[400],
-    borderRadius: BorderRadius.circular(12.0),
-  ),
-  padding: const EdgeInsets.all(16.0),
-  child: const Center(
-  child: Text(
-    'Reach New Heights',
-    style: TextStyle(
-      fontSize: 20,
-      fontWeight: FontWeight.bold,
-      color: Colors.white,
-    ),
-  ),
-),
-),
-
+              decoration: BoxDecoration(
+                color: Colors.red[400],
+                borderRadius: BorderRadius.circular(12.0),
+              ),
+              padding: const EdgeInsets.all(16.0),
+              child: const Center(
+                child: Text(
+                  'Reach New Heights',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
             const SizedBox(height: 20),
             _buildTextFieldWithIcon(Icons.person, 'First Name'),
             const SizedBox(height: 10),
@@ -62,7 +62,7 @@ class SignUpScreen extends StatelessWidget {
                 // Firebase logic
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red[400], 
+                backgroundColor: Colors.red[400],
               ),
               child: const Text(
                 'Sign Up',
