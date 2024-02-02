@@ -1,24 +1,28 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       home: SignUpScreen(),
     );
   }
 }
 
 class SignUpScreen extends StatelessWidget {
+  const SignUpScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('BellBoard Sign Up', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+        title: const Text('BellBoard Sign Up', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
       body: Padding(
@@ -31,8 +35,8 @@ class SignUpScreen extends StatelessWidget {
     color: Colors.red[400],
     borderRadius: BorderRadius.circular(12.0),
   ),
-  padding: EdgeInsets.all(16.0),
-  child: Center(
+  padding: const EdgeInsets.all(16.0),
+  child: const Center(
   child: Text(
     'Reach New Heights',
     style: TextStyle(
@@ -44,23 +48,23 @@ class SignUpScreen extends StatelessWidget {
 ),
 ),
 
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             _buildTextFieldWithIcon(Icons.person, 'First Name'),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             _buildTextFieldWithIcon(Icons.person, 'Last Name'),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             _buildTextFieldWithIcon(Icons.email, 'Email'),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             _buildTextFieldWithIcon(Icons.lock, 'Password', isPassword: true),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 // Firebase logic
               },
               style: ElevatedButton.styleFrom(
-                primary: Colors.red[400], 
+                backgroundColor: Colors.red[400], 
               ),
-              child: Text(
+              child: const Text(
                 'Sign Up',
                 style: TextStyle(
                   color: Colors.white,
@@ -80,7 +84,7 @@ class SignUpScreen extends StatelessWidget {
       decoration: InputDecoration(
         prefixIcon: Icon(icon),
         hintText: hintText,
-        border: OutlineInputBorder(),
+        border: const OutlineInputBorder(),
       ),
     );
   }
