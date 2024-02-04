@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mobileapp/screens/home_screen.dart';
+import 'package:mobileapp/Screens/login.dart';
+import 'package:mobileapp/Screens/home_screen.dart';
+import 'package:mobileapp/Screens/signup.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,7 +17,14 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const HomeScreen(),
+      // Define initial route as login screen
+      initialRoute: '/login',
+      // Define routes
+      routes: {
+        '/signup': (context) => const SignUpScreen(),
+        '/login': (context) => const LoginScreen(),
+        '/home': (context) => const HomeScreen(),
+      },
     );
   }
 }

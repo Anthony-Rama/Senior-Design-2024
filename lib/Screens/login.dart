@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:mobileapp/Screens/home_screen.dart';
+import 'package:mobileapp/Screens/signup.dart';
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({Key? key}) : super(key: key);
 
   @override
   _MyAppState createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -83,7 +81,11 @@ class _MyAppState extends State<MyApp> {
                         child: MaterialButton(
                           minWidth: double.infinity,
                           onPressed: () {
-                            // TO DO add navigation to homepage
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const HomeScreen()),
+                            );
                           },
                           color: Colors.red[400],
                           textColor: Colors.white,
@@ -98,7 +100,11 @@ class _MyAppState extends State<MyApp> {
 
                       TextButton(
                         onPressed: () {
-                          // TO DO add navigation to signup page
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const SignUpScreen()),
+                          );
                         },
                         child: Text(
                           'Dont have an account? Sign up!',

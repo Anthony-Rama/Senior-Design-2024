@@ -1,19 +1,5 @@
 import 'package:flutter/material.dart';
-
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: SignUpScreen(),
-    );
-  }
-}
+import 'package:mobileapp/Screens/home_screen.dart';
 
 class SignUpScreen extends StatelessWidget {
   const SignUpScreen({super.key});
@@ -22,8 +8,10 @@ class SignUpScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('BellBoard Sign Up',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+        title: const Text(
+          'BellBoard Sign Up',
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
       ),
       body: Padding(
@@ -59,7 +47,15 @@ class SignUpScreen extends StatelessWidget {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // Firebase logic
+                // Implement your sign-up logic here
+
+                // Navigate to the HomeScreen upon successful sign-up
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          const HomeScreen()), // Make sure HomeScreen is defined and imported
+                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red[400],
