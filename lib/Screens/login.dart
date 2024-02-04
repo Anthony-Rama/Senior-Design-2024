@@ -41,16 +41,19 @@ class _MyAppState extends State<MyApp> {
                           decoration: InputDecoration(
                             labelText: 'Email',
                             hintText: 'Enter email',
-                            prefixIcon: Icon(Icons.email),
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(20.0),),
+                            prefixIcon: const Icon(Icons.email),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20.0),
+                            ),
                           ),
-                          onChanged: (String value) {}, // add login logic for email in here i think
+                          onChanged: (String
+                              value) {}, // add login logic for email in here i think
                           validator: (value) {
                             return value!.isEmpty ? 'Please enter email' : null;
                           },
                         ),
                       ),
-                      SizedBox(height: 30),
+                      const SizedBox(height: 30),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 15),
                         child: TextFormField(
@@ -58,48 +61,54 @@ class _MyAppState extends State<MyApp> {
                           decoration: InputDecoration(
                             labelText: 'Password',
                             hintText: 'Enter password',
-                            prefixIcon: Icon(Icons.lock),
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(20.0),),
+                            prefixIcon: const Icon(Icons.lock),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20.0),
+                            ),
                           ),
-                          onChanged: (String value) {}, // add login logic for password here i think
+                          onChanged: (String
+                              value) {}, // add login logic for password here i think
                           validator: (value) {
-                            return value!.isEmpty ? 'Please enter password' : null;
+                            return value!.isEmpty
+                                ? 'Please enter password'
+                                : null;
                           },
                         ),
                       ),
-                      SizedBox(height: 30),
+                      const SizedBox(height: 30),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 35),
                         //child: ClipRRect(
-                          //borderRadius: BorderRadius.circular(20),
+                        //borderRadius: BorderRadius.circular(20),
                         child: MaterialButton(
                           minWidth: double.infinity,
                           onPressed: () {
                             // TO DO add navigation to homepage
                           },
-                          child: Text('Login'),
                           color: Colors.red[400],
                           textColor: Colors.white,
                           shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20.0), // Adjust the value as needed
-                         ),
+                            borderRadius: BorderRadius.circular(
+                                20.0), // Adjust the value as needed
+                          ),
+                          child: const Text('Login'),
                         ),
                       ),
-                     // ),
-                     
-                     TextButton(
-                      onPressed: () {
-                        // TO DO add navigation to signup page
-                      },
-                      child: Text(
-                     'Dont have an account? Sign up!',
-                      style: TextStyle(
-                      fontSize: 15,
-                      color: Colors.red[400],
-                      fontWeight: FontWeight.bold,
-                    ),
-                    ),
-                    )
+                      // ),
+
+                      TextButton(
+                        onPressed: () {
+                          // TO DO add navigation to signup page
+                        },
+                        child: Text(
+                          'Dont have an account? Sign up!',
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.red[400],
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      )
                     ],
                   ),
                 ),
