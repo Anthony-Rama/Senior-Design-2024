@@ -47,14 +47,10 @@ class SignUpScreen extends StatelessWidget {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // Implement your sign-up logic here
-
-                // Navigate to the HomeScreen upon successful sign-up
+                //TODO: Placeholder for SIGNUP logic
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          const HomeScreen()), // Make sure HomeScreen is defined and imported
+                  MaterialPageRoute(builder: (context) => const HomeScreen()),
                 );
               },
               style: ElevatedButton.styleFrom(
@@ -64,6 +60,8 @@ class SignUpScreen extends StatelessWidget {
                 'Sign Up',
                 style: TextStyle(
                   color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
                 ),
               ),
             ),
