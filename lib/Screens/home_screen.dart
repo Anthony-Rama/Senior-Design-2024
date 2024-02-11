@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobileapp/Screens/login.dart';
 import 'package:mobileapp/Screens/preset.dart';
 import 'package:mobileapp/Screens/leaderboards.dart';
 import 'package:mobileapp/Screens/stats.dart';
@@ -16,6 +17,18 @@ class HomeScreen extends StatelessWidget {
         title: const Text(
             'Welcome "Username"'), // TODO: Replace "username" with user.id from Firebase
         centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.logout), // Change to a logout icon
+          onPressed: () {
+            // TODO: Implement user logout logic (clear user session, etc.)
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      const LoginScreen()), // Navigate to LoginScreen
+            );
+          },
+        ),
       ),
       backgroundColor: Colors.white,
       body: Center(
@@ -60,7 +73,11 @@ class HomeScreen extends StatelessWidget {
                       horizontal: 32.0, vertical: 16.0),
                 ),
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => const PresetScreen()),);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const PresetScreen()),
+                  );
                 },
                 child: const Text(
                   'PRESET ROUTES',
@@ -85,7 +102,8 @@ class HomeScreen extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const CustomRoutes()),
+                    MaterialPageRoute(
+                        builder: (context) => const CustomRoutes()),
                   );
                 },
                 child: const Text(
