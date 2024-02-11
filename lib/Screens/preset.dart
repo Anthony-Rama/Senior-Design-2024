@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mobileapp/Screens/home_screen.dart';
 import 'package:mobileapp/main.dart';
-
 
 class ListItem {
   final String title;
@@ -18,12 +18,10 @@ void main() {
   runApp(const MyApp());
 }
 
-
 class PresetScreen extends StatelessWidget {
-   const PresetScreen({super.key});
+  const PresetScreen({super.key});
   @override
   Widget build(BuildContext context) {
-    
     List<ListItem> listItems = [
       ListItem(
         title: 'Beginner',
@@ -36,21 +34,26 @@ class PresetScreen extends StatelessWidget {
         dropdownOptions: ['Option 1', 'Option 2', 'Option 3'],
       ),
       ListItem(
-        title: 'Expert',
-        selectedOption: 'Option 1',
-        dropdownOptions: ['Option 1', 'Option 2', 'Option 3']  
-      )
+          title: 'Expert',
+          selectedOption: 'Option 1',
+          dropdownOptions: ['Option 1', 'Option 2', 'Option 3'])
     ];
 
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text(
-            'PRESET ROUTES',
-           style: TextStyle(color: Colors.white),
-           ),
-          backgroundColor: Colors.red[400],
-        ),
+            title: const Text(
+              'PRESET ROUTES',
+              style: TextStyle(color: Colors.white),
+            ),
+            backgroundColor: Colors.red[400],
+           leading: IconButton(
+                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const HomeScreen()),);
+                  //Navigator.of(context).pop();
+                })),
+        //),
         //backgroundColor: Colors.red[400],
         body: ListView.builder(
           itemCount: listItems.length,
@@ -77,9 +80,9 @@ class _DropdownListItemState extends State<DropdownListItem> {
   @override
   Widget build(BuildContext context) {
     return ExpansionTile(
-      title: Text(widget.listItem.title,
-        style: TextStyle(fontWeight: FontWeight.w600,
-        color: Colors.red[400]),
+      title: Text(
+        widget.listItem.title,
+        style: TextStyle(fontWeight: FontWeight.w600, color: Colors.red[400]),
       ),
       children: widget.listItem.dropdownOptions.map((option) {
         return ListTile(
