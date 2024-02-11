@@ -20,7 +20,15 @@ class _MyAppState extends State<LoginScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                'Login',
+                'WELCOME TO',
+                style: TextStyle(
+                  fontSize: 35,
+                  color: Colors.red[400],
+                  fontWeight: FontWeight.bold,
+                ),
+              ), 
+              Text(
+                'THE BELLBOARD',
                 style: TextStyle(
                   fontSize: 35,
                   color: Colors.red[400],
@@ -91,9 +99,9 @@ class _MyAppState extends State<LoginScreen> {
                           textColor: Colors.white,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(
-                                20.0), // Adjust the value as needed
+                                20.0), 
                           ),
-                          child: const Text('Login'),
+                          child: const Text('Log in'),
                         ),
                       ),
                       // ),
@@ -114,7 +122,26 @@ class _MyAppState extends State<LoginScreen> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
+                      ),
+                    TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const SignUpScreen() /* <---- change navigation to password reset screen*/
+                                ),
+                          );
+                        },
+                        child: Text(
+                          'Forgot password?',
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.red[400],
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       )
+
                     ],
                   ),
                 ),

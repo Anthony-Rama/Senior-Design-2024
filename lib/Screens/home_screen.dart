@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobileapp/Screens/preset.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -56,7 +57,7 @@ class HomeScreen extends StatelessWidget {
                       horizontal: 32.0, vertical: 16.0),
                 ),
                 onPressed: () {
-                  // TODO: Placeholder for navigation or functionality for preset routes and other screens
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const PresetScreen()),);
                 },
                 child: const Text(
                   'PRESET ROUTES',
