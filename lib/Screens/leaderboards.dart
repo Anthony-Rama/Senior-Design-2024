@@ -37,7 +37,7 @@ class Leaderboards extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => GlobalLeaderboard()),
+                        builder: (context) => const GlobalLeaderboard()),
                   );
                 },
                 child: const Text(
@@ -64,7 +64,7 @@ class Leaderboards extends StatelessWidget {
                   // TODO: Placeholder for navigation or functionality for preset routes and other screens
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => SquadLeaderboard()),
+                    MaterialPageRoute(builder: (context) => const SquadLeaderboard()),
                   );
                 },
                 child: const Text(
