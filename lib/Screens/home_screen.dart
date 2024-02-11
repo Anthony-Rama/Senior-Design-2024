@@ -85,7 +85,7 @@ class HomeScreen extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => CustomRoutes()),
+                    MaterialPageRoute(builder: (context) => const CustomRoutes()),
                   );
                 },
                 child: const Text(
@@ -111,7 +111,7 @@ class HomeScreen extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => Stats()),
+                    MaterialPageRoute(builder: (context) => const Stats()),
                   );
                 },
                 child: const Text(

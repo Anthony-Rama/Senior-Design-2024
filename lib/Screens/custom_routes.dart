@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class CustomRoutes extends StatefulWidget {
+  const CustomRoutes({super.key});
+
   @override
   _CustomRoutesState createState() => _CustomRoutesState();
 }
@@ -19,7 +21,7 @@ class _CustomRoutesState extends State<CustomRoutes> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Custom Routes',
           style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
@@ -28,8 +30,8 @@ class _CustomRoutesState extends State<CustomRoutes> {
         onPressed: () {
           // TODO: Navigate to the grid to create a new custom route
         },
-        child: Icon(Icons.add, color: Colors.white),
         backgroundColor: Colors.red[400],
+        child: const Icon(Icons.add, color: Colors.white),
       ),
       body: ListView.builder(
         itemCount: routeNames.length,

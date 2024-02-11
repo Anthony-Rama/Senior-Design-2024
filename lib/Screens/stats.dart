@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class Stats extends StatefulWidget {
+  const Stats({super.key});
+
   @override
   _StatsState createState() => _StatsState();
 }
@@ -16,7 +18,7 @@ class _StatsState extends State<Stats> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Completed Routes',
           style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
@@ -34,36 +36,36 @@ class _StatsState extends State<Stats> {
                         color: Colors.red[400],
                         borderRadius: BorderRadius.circular(8.0),
                       ),
-                      padding: EdgeInsets.all(8.0),
-                      child: Text(
+                      padding: const EdgeInsets.all(8.0),
+                      child: const Text(
                         'Route Name',
                         style: TextStyle(color: Colors.white),
                       ),
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Container(
                       decoration: BoxDecoration(
                         color: Colors.red[400],
                         borderRadius: BorderRadius.circular(8.0),
                       ),
-                      padding: EdgeInsets.all(8.0),
-                      child: Text(
+                      padding: const EdgeInsets.all(8.0),
+                      child: const Text(
                         'Date',
                         style: TextStyle(color: Colors.white),
                       ),
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Container(
                       decoration: BoxDecoration(
                         color: Colors.red[400],
                         borderRadius: BorderRadius.circular(8.0),
                       ),
-                      padding: EdgeInsets.all(8.0),
-                      child: Text(
+                      padding: const EdgeInsets.all(8.0),
+                      child: const Text(
                         'Time',
                         style: TextStyle(color: Colors.white),
                       ),
@@ -83,38 +85,38 @@ class _StatsState extends State<Stats> {
                         color: Colors.red[100],
                         borderRadius: BorderRadius.circular(8.0),
                       ),
-                      padding: EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.all(8.0),
                       child: Text(
                         route['routeName'] ?? '',
-                        style: TextStyle(color: Colors.black),
+                        style: const TextStyle(color: Colors.black),
                       ),
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Container(
                       decoration: BoxDecoration(
                         color: Colors.red[100],
                         borderRadius: BorderRadius.circular(8.0),
                       ),
-                      padding: EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.all(8.0),
                       child: Text(
                         route['date'] ?? '',
-                        style: TextStyle(color: Colors.black),
+                        style: const TextStyle(color: Colors.black),
                       ),
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Container(
                       decoration: BoxDecoration(
                         color: Colors.red[100],
                         borderRadius: BorderRadius.circular(8.0),
                       ),
-                      padding: EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.all(8.0),
                       child: Text(
                         route['time'] ?? '',
-                        style: TextStyle(color: Colors.black),
+                        style: const TextStyle(color: Colors.black),
                       ),
                     ),
                   ),
