@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:mobileapp/Screens/home_screen.dart';
 import 'package:mobileapp/main.dart';
+import 'package:mobileapp/Screens/home_screen.dart';
+import 'package:mobileapp/Screens/custom_routes.dart';
+import 'package:mobileapp/Screens/stats.dart';
+import 'package:mobileapp/Screens/leaderboards.dart';
 
 class ListItem {
   final String title;
@@ -19,7 +22,11 @@ void main() {
 }
 
 class PresetScreen extends StatelessWidget {
-  const PresetScreen({super.key});
+  PresetScreen({super.key});
+
+  // key to access Scaffold state (for side menu navigation)
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     List<ListItem> listItems = [
@@ -41,20 +48,101 @@ class PresetScreen extends StatelessWidget {
 
     return MaterialApp(
       home: Scaffold(
+        key: _scaffoldKey,
         appBar: AppBar(
-            title: const Text(
-              'PRESET ROUTES',
-              style: TextStyle(color: Colors.white),
-            ),
-            backgroundColor: Colors.red[400],
-           leading: IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.white),
-                onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => const HomeScreen()),);
-                  //Navigator.of(context).pop();
-                })),
-        //),
-        //backgroundColor: Colors.red[400],
+          title: const Text(
+            'PRESET ROUTES',
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.red[400],
+          leading: IconButton(
+            icon: const Icon(Icons.menu, color: Colors.white),
+            onPressed: () {
+              // open drawer using key
+              _scaffoldKey.currentState?.openDrawer();
+            },
+          ),
+        ),
+        drawer: Drawer(
+          width: MediaQuery.of(context).size.width * 0.5,
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: <Widget>[
+              Container(
+                height: 123,
+                child: DrawerHeader(
+                  decoration: BoxDecoration(
+                    color: Colors.red[400],
+                  ),
+                  child: Center(
+                    child: Text(
+                      'MENU',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              ListTile(
+                title: Text('Home'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const HomeScreen()),
+                  );
+                },
+              ),
+              Divider(),
+              ListTile(
+                title: Text('Custom Routes'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const CustomRoutes(),
+                    ),
+                  );
+                },
+              ),
+              Divider(),
+              ListTile(
+                title: Text('Stats'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const Stats()),
+                  );
+                },
+              ),
+              Divider(),
+              ListTile(
+                title: Text('Leaderboards'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const Leaderboards()),
+                  );
+                },
+              ),
+              Divider(),
+              ListTile(
+                title: Text('Settings'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          const HomeScreen(), //TODO: change to settings screen
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
         body: ListView.builder(
           itemCount: listItems.length,
           itemBuilder: (BuildContext context, int index) {
@@ -72,7 +160,6 @@ class DropdownListItem extends StatefulWidget {
   const DropdownListItem({Key? key, required this.listItem}) : super(key: key);
 
   @override
-  // ignore: library_private_types_in_public_api
   _DropdownListItemState createState() => _DropdownListItemState();
 }
 
