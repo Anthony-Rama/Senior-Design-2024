@@ -1,23 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:mobileapp/Screens/custom_routes.dart';
+import 'package:mobileapp/Screens/home_screen.dart';
+import 'package:mobileapp/Screens/preset.dart';
+import 'package:mobileapp/Screens/stats.dart';
 
 class Leaderboards extends StatelessWidget {
   const Leaderboards({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
     final buttonWidth = MediaQuery.of(context).size.width * 0.8;
 
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: const Text(
-            'Leaderboards'), // TODO: Replace "username" with user.id from Firebase
-        centerTitle: true,
+          'LEADERBOARDS', //TODO: Replace "username" with user.id from Firebase
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Colors.red[400],
+        leading: IconButton(
+          icon: const Icon(Icons.menu, color: Colors.white),
+          onPressed: () {
+            _scaffoldKey.currentState?.openDrawer();
+          },
+        ),
       ),
       backgroundColor: Colors.white,
       body: Center(
         child: Column(
-          mainAxisSize:
-              MainAxisSize.min, // Use the minimum space needed by the children
+          mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             SizedBox(
               width: buttonWidth,
@@ -37,7 +50,8 @@ class Leaderboards extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const GlobalLeaderboard()),
+                      builder: (context) => const GlobalLeaderboard(),
+                    ),
                   );
                 },
                 child: const Text(
@@ -64,7 +78,9 @@ class Leaderboards extends StatelessWidget {
                   // TODO: Placeholder for navigation or functionality for preset routes and other screens
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const SquadLeaderboard()),
+                    MaterialPageRoute(
+                      builder: (context) => const SquadLeaderboard(),
+                    ),
                   );
                 },
                 child: const Text(
@@ -72,6 +88,85 @@ class Leaderboards extends StatelessWidget {
                   style: TextStyle(fontSize: 16.0),
                 ),
               ),
+            ),
+          ],
+        ),
+      ),
+      drawer: Drawer(
+        width: MediaQuery.of(context).size.width * 0.5,
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            Container(
+              height: 123,
+              child: DrawerHeader(
+                decoration: BoxDecoration(
+                  color: Colors.red[400],
+                ),
+                child: Center(
+                  child: Text(
+                    'MENU',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            ListTile(
+              title: Text('Home'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const HomeScreen()),
+                );
+              },
+            ),
+            Divider(),
+            ListTile(
+              title: Text('Preset Routes'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PresetScreen(),
+                  ),
+                );
+              },
+            ),
+            Divider(),
+            ListTile(
+              title: Text('Custom Routes'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const CustomRoutes()),
+                );
+              },
+            ),
+            Divider(),
+            ListTile(
+              title: Text('Stats'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Stats()),
+                );
+              },
+            ),
+            Divider(),
+            ListTile(
+              title: Text('Settings'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        const HomeScreen(), //TODO: change to settings screen
+                  ),
+                );
+              },
             ),
           ],
         ),
@@ -123,9 +218,19 @@ class GlobalLeaderboard extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Leaderboard'),
-        centerTitle: true,
-      ),
+          title: const Text(
+            'LEADERBOARDS',
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.red[400],
+          leading: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Leaderboards()),
+                );
+              })),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -171,22 +276,31 @@ class SquadLeaderboard extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Squad Leaderboard'),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () {
-              // Navigate to the screen for creating a new group
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const CreateGroupScreen()),
-              );
-            },
-          ),
-        ],
-      ),
+          title: const Text('SQUAD LEADERBOARDS',
+              style: TextStyle(color: Colors.white)),
+          centerTitle: true,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.add, color: Colors.white),
+              onPressed: () {
+                // Navigate to the screen for creating a new group
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const CreateGroupScreen()),
+                );
+              },
+            ),
+          ],
+          backgroundColor: Colors.red[400],
+          leading: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Leaderboards()),
+                );
+              })),
       body: ListView.builder(
         itemCount: groups.length,
         itemBuilder: (context, index) {
