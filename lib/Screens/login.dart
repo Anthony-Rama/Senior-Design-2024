@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobileapp/Screens/forgotpassword.dart';
 import 'package:mobileapp/Screens/home_screen.dart';
 import 'package:mobileapp/Screens/signup.dart';
 
@@ -45,7 +46,7 @@ class _MyAppState extends State<LoginScreen> {
                         child: TextFormField(
                           keyboardType: TextInputType.emailAddress,
                           decoration: InputDecoration(
-                            labelText: 'Email',
+                            //labelText: 'Email',
                             hintText: 'Enter email',
                             prefixIcon: const Icon(Icons.email),
                             border: OutlineInputBorder(
@@ -65,7 +66,7 @@ class _MyAppState extends State<LoginScreen> {
                         child: TextFormField(
                           keyboardType: TextInputType.visiblePassword,
                           decoration: InputDecoration(
-                            labelText: 'Password',
+                            //labelText: 'Password',
                             hintText: 'Enter password',
                             prefixIcon: const Icon(Icons.lock),
                             border: OutlineInputBorder(
@@ -128,7 +129,7 @@ class _MyAppState extends State<LoginScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const SignUpScreen() /* <---- change navigation to password reset screen*/
+                                builder: (context) => const ForgotPassScreen()
                                 ),
                           );
                         },
