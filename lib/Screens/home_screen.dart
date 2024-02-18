@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobileapp/Screens/login.dart';
 import 'package:mobileapp/Screens/preset.dart';
 import 'package:mobileapp/Screens/leaderboards.dart';
+import 'package:mobileapp/Screens/settings.dart';
 import 'package:mobileapp/Screens/stats.dart';
 import 'package:mobileapp/Screens/custom_routes.dart';
 
@@ -180,7 +181,11 @@ class HomeScreen extends StatelessWidget {
                       horizontal: 32.0, vertical: 16.0),
                 ),
                 onPressed: () {
-                  // TODO: Placeholder for navigation or functionality for settings and other screens
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const SettingsScreen()),
+                  ); 
                 },
                 child: const Text(
                   'SETTINGS',
