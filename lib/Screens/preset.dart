@@ -68,13 +68,13 @@ class PresetScreen extends StatelessWidget {
           child: ListView(
             padding: EdgeInsets.zero,
             children: <Widget>[
-              Container(
+              SizedBox(
                 height: 123,
                 child: DrawerHeader(
                   decoration: BoxDecoration(
                     color: Colors.red[400],
                   ),
-                  child: Center(
+                  child: const Center(
                     child: Text(
                       'MENU',
                       style: TextStyle(
@@ -86,7 +86,7 @@ class PresetScreen extends StatelessWidget {
                 ),
               ),
               ListTile(
-                title: Text('Home'),
+                title: const Text('Home'),
                 onTap: () {
                   Navigator.push(
                     context,
@@ -94,9 +94,9 @@ class PresetScreen extends StatelessWidget {
                   );
                 },
               ),
-              Divider(),
+              const Divider(),
               ListTile(
-                title: Text('Custom Routes'),
+                title: const Text('Custom Routes'),
                 onTap: () {
                   Navigator.push(
                     context,
@@ -106,9 +106,9 @@ class PresetScreen extends StatelessWidget {
                   );
                 },
               ),
-              Divider(),
+              const Divider(),
               ListTile(
-                title: Text('Stats'),
+                title: const Text('Stats'),
                 onTap: () {
                   Navigator.push(
                     context,
@@ -116,9 +116,9 @@ class PresetScreen extends StatelessWidget {
                   );
                 },
               ),
-              Divider(),
+              const Divider(),
               ListTile(
-                title: Text('Leaderboards'),
+                title: const Text('Leaderboards'),
                 onTap: () {
                   Navigator.push(
                     context,
@@ -127,9 +127,9 @@ class PresetScreen extends StatelessWidget {
                   );
                 },
               ),
-              Divider(),
+              const Divider(),
               ListTile(
-                title: Text('Settings'),
+                title: const Text('Settings'),
                 onTap: () {
                   Navigator.push(
                     context,
