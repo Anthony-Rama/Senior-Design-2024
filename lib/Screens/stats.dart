@@ -165,6 +165,7 @@ class _StatsState extends State<Stats> {
             ),
             ListTile(
               title: const Text('Bellboard Feed'),
+
               onTap: () {
                 Navigator.push(
                   context,
