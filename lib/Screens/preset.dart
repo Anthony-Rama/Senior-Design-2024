@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mobileapp/main.dart';
-import 'package:mobileapp/Screens/home_screen.dart';
+import 'package:mobileapp/Screens/feed.dart';
+import 'package:mobileapp/Screens/login.dart';
+import 'package:mobileapp/Screens/settings.dart';
 import 'package:mobileapp/Screens/custom_routes.dart';
 import 'package:mobileapp/Screens/stats.dart';
 import 'package:mobileapp/Screens/leaderboards.dart';
@@ -15,10 +16,6 @@ class ListItem {
     required this.selectedOption,
     required this.dropdownOptions,
   });
-}
-
-void main() {
-  runApp(const MyApp());
 }
 
 class PresetScreen extends StatelessWidget {
@@ -64,7 +61,6 @@ class PresetScreen extends StatelessWidget {
           ),
         ),
         drawer: Drawer(
-          width: MediaQuery.of(context).size.width * 0.5,
           child: ListView(
             padding: EdgeInsets.zero,
             children: <Widget>[
@@ -86,11 +82,23 @@ class PresetScreen extends StatelessWidget {
                 ),
               ),
               ListTile(
-                title: const Text('Home'),
+                title: const Text('Bellboard Feed'),
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const HomeScreen()),
+                    MaterialPageRoute(builder: (context) => const FeedScreen()),
+                  );
+                },
+              ),
+              const Divider(),
+              ListTile(
+                title: const Text('Preset Routes'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => PresetScreen(),
+                    ),
                   );
                 },
               ),
@@ -101,8 +109,7 @@ class PresetScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const CustomRoutes(),
-                    ),
+                        builder: (context) => const CustomRoutes()),
                   );
                 },
               ),
@@ -135,8 +142,21 @@ class PresetScreen extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (context) =>
-                          const HomeScreen(), //TODO: change to settings screen
+                          const SettingsScreen(), //TODO: change to settings screen
                     ),
+                  );
+                },
+              ),
+              const Divider(),
+              ListTile(
+                leading: const Icon(Icons.logout),
+                title: const Text('Logout'),
+                onTap: () {
+                  // Implement user logout logic (e.g., clearing user session)
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const LoginScreen()),
                   );
                 },
               ),
