@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobileapp/Screens/home_screen.dart';
+import 'package:mobileapp/Screens/feed.dart';
 
 class SignUpScreen extends StatelessWidget {
   const SignUpScreen({super.key});
@@ -50,7 +50,7 @@ class SignUpScreen extends StatelessWidget {
                 //TODO: Placeholder for SIGNUP logic
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => const HomeScreen()),
+                  MaterialPageRoute(builder: (context) => const FeedScreen()),
                 );
               },
               style: ElevatedButton.styleFrom(

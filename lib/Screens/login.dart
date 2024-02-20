@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mobileapp/Screens/feed.dart';
 import 'package:mobileapp/Screens/forgotpassword.dart';
-import 'package:mobileapp/Screens/home_screen.dart';
 import 'package:mobileapp/Screens/signup.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -27,7 +27,7 @@ class _MyAppState extends State<LoginScreen> {
                   color: Colors.red[400],
                   fontWeight: FontWeight.bold,
                 ),
-              ), 
+              ),
               Text(
                 'THE BELLBOARD',
                 style: TextStyle(
@@ -93,14 +93,13 @@ class _MyAppState extends State<LoginScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => const HomeScreen()),
+                                  builder: (context) => const FeedScreen()),
                             );
                           },
                           color: Colors.red[400],
                           textColor: Colors.white,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                                20.0), 
+                            borderRadius: BorderRadius.circular(20.0),
                           ),
                           child: const Text('Log in'),
                         ),
@@ -124,13 +123,12 @@ class _MyAppState extends State<LoginScreen> {
                           ),
                         ),
                       ),
-                    TextButton(
+                      TextButton(
                         onPressed: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const ForgotPassScreen()
-                                ),
+                                builder: (context) => const ForgotPassScreen()),
                           );
                         },
                         child: Text(
@@ -142,7 +140,6 @@ class _MyAppState extends State<LoginScreen> {
                           ),
                         ),
                       )
-
                     ],
                   ),
                 ),

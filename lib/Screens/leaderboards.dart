@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mobileapp/Screens/custom_routes.dart';
-import 'package:mobileapp/Screens/home_screen.dart';
+import 'package:mobileapp/Screens/feed.dart';
+import 'package:mobileapp/Screens/login.dart';
 import 'package:mobileapp/Screens/preset.dart';
+import 'package:mobileapp/Screens/settings.dart';
 import 'package:mobileapp/Screens/stats.dart';
 
 class Leaderboards extends StatelessWidget {
@@ -93,7 +95,6 @@ class Leaderboards extends StatelessWidget {
         ),
       ),
       drawer: Drawer(
-        width: MediaQuery.of(context).size.width * 0.5,
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
@@ -115,11 +116,11 @@ class Leaderboards extends StatelessWidget {
               ),
             ),
             ListTile(
-              title: const Text('Home'),
+              title: const Text('Feed'),
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const HomeScreen()),
+                  MaterialPageRoute(builder: (context) => const FeedScreen()),
                 );
               },
             ),
@@ -157,14 +158,36 @@ class Leaderboards extends StatelessWidget {
             ),
             const Divider(),
             ListTile(
+              title: const Text('Leaderboards'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Leaderboards()),
+                );
+              },
+            ),
+            const Divider(),
+            ListTile(
               title: const Text('Settings'),
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) =>
-                        const HomeScreen(), //TODO: change to settings screen
+                        const SettingsScreen(), //TODO: change to settings screen
                   ),
+                );
+              },
+            ),
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.logout),
+              title: const Text('Logout'),
+              onTap: () {
+                // Implement user logout logic (e.g., clearing user session)
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
                 );
               },
             ),
