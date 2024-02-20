@@ -23,10 +23,10 @@ class _CustomRoutesState extends State<CustomRoutes> {
     List<String> routeNames =
         customRoutes.map((route) => route['routeName'] ?? '').toList();
 
-    final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+    final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
     return Scaffold(
-      key: _scaffoldKey,
+      key: scaffoldKey,
       appBar: AppBar(
         title: const Text(
           'CUSTOM ROUTES',
@@ -36,7 +36,7 @@ class _CustomRoutesState extends State<CustomRoutes> {
         leading: IconButton(
           icon: const Icon(Icons.menu, color: Colors.white),
           onPressed: () {
-            _scaffoldKey.currentState?.openDrawer();
+            scaffoldKey.currentState?.openDrawer();
           },
         ),
       ),
@@ -52,13 +52,13 @@ class _CustomRoutesState extends State<CustomRoutes> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
-            Container(
+            SizedBox(
               height: 123,
               child: DrawerHeader(
                 decoration: BoxDecoration(
                   color: Colors.red[400],
                 ),
-                child: Center(
+                child: const Center(
                   child: Text(
                     'MENU',
                     style: TextStyle(
@@ -70,7 +70,7 @@ class _CustomRoutesState extends State<CustomRoutes> {
               ),
             ),
             ListTile(
-              title: Text('Home'),
+              title: const Text('Home'),
               onTap: () {
                 Navigator.push(
                   context,
@@ -78,9 +78,9 @@ class _CustomRoutesState extends State<CustomRoutes> {
                 );
               },
             ),
-            Divider(),
+            const Divider(),
             ListTile(
-              title: Text('Preset Routes'),
+              title: const Text('Preset Routes'),
               onTap: () {
                 Navigator.push(
                   context,
@@ -90,9 +90,9 @@ class _CustomRoutesState extends State<CustomRoutes> {
                 );
               },
             ),
-            Divider(),
+            const Divider(),
             ListTile(
-              title: Text('Stats'),
+              title: const Text('Stats'),
               onTap: () {
                 Navigator.push(
                   context,
@@ -100,9 +100,9 @@ class _CustomRoutesState extends State<CustomRoutes> {
                 );
               },
             ),
-            Divider(),
+            const Divider(),
             ListTile(
-              title: Text('Leaderboards'),
+              title: const Text('Leaderboards'),
               onTap: () {
                 Navigator.push(
                   context,
@@ -110,9 +110,9 @@ class _CustomRoutesState extends State<CustomRoutes> {
                 );
               },
             ),
-            Divider(),
+            const Divider(),
             ListTile(
-              title: Text('Settings'),
+              title: const Text('Settings'),
               onTap: () {
                 Navigator.push(
                   context,

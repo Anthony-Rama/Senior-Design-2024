@@ -9,11 +9,11 @@ class Leaderboards extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+    final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
     final buttonWidth = MediaQuery.of(context).size.width * 0.8;
 
     return Scaffold(
-      key: _scaffoldKey,
+      key: scaffoldKey,
       appBar: AppBar(
         title: const Text(
           'LEADERBOARDS', //TODO: Replace "username" with user.id from Firebase
@@ -23,7 +23,7 @@ class Leaderboards extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.menu, color: Colors.white),
           onPressed: () {
-            _scaffoldKey.currentState?.openDrawer();
+            scaffoldKey.currentState?.openDrawer();
           },
         ),
       ),
@@ -97,13 +97,13 @@ class Leaderboards extends StatelessWidget {
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
-            Container(
+            SizedBox(
               height: 123,
               child: DrawerHeader(
                 decoration: BoxDecoration(
                   color: Colors.red[400],
                 ),
-                child: Center(
+                child: const Center(
                   child: Text(
                     'MENU',
                     style: TextStyle(
@@ -115,7 +115,7 @@ class Leaderboards extends StatelessWidget {
               ),
             ),
             ListTile(
-              title: Text('Home'),
+              title: const Text('Home'),
               onTap: () {
                 Navigator.push(
                   context,
@@ -123,9 +123,9 @@ class Leaderboards extends StatelessWidget {
                 );
               },
             ),
-            Divider(),
+            const Divider(),
             ListTile(
-              title: Text('Preset Routes'),
+              title: const Text('Preset Routes'),
               onTap: () {
                 Navigator.push(
                   context,
@@ -135,9 +135,9 @@ class Leaderboards extends StatelessWidget {
                 );
               },
             ),
-            Divider(),
+            const Divider(),
             ListTile(
-              title: Text('Custom Routes'),
+              title: const Text('Custom Routes'),
               onTap: () {
                 Navigator.push(
                   context,
@@ -145,9 +145,9 @@ class Leaderboards extends StatelessWidget {
                 );
               },
             ),
-            Divider(),
+            const Divider(),
             ListTile(
-              title: Text('Stats'),
+              title: const Text('Stats'),
               onTap: () {
                 Navigator.push(
                   context,
@@ -155,9 +155,9 @@ class Leaderboards extends StatelessWidget {
                 );
               },
             ),
-            Divider(),
+            const Divider(),
             ListTile(
-              title: Text('Settings'),
+              title: const Text('Settings'),
               onTap: () {
                 Navigator.push(
                   context,
