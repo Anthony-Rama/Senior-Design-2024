@@ -11,17 +11,18 @@ class FeedScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+    final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
     return Scaffold(
-      key: _scaffoldKey,
+      key: scaffoldKey,
       appBar: AppBar(
         backgroundColor: Colors.red[400],
-        title: const Text('Feed', style: TextStyle(color: Colors.white)),
+        title:
+            const Text('BELLBOARD FEED', style: TextStyle(color: Colors.white)),
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.menu, color: Colors.white),
-          onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+          onPressed: () => scaffoldKey.currentState?.openDrawer(),
         ),
       ),
       drawer: Drawer(
@@ -46,7 +47,7 @@ class FeedScreen extends StatelessWidget {
               ),
             ),
             ListTile(
-              title: const Text('Feed'),
+              title: const Text('Bellboard Feed'),
               onTap: () {
                 Navigator.push(
                   context,
