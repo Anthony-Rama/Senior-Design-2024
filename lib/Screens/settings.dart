@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobileapp/Screens/custom_routes.dart';
-import 'package:mobileapp/Screens/feed.dart';
+import 'package:mobileapp/SocialMedia/feed.dart';
 import 'package:mobileapp/Screens/leaderboards.dart';
 import 'package:mobileapp/Screens/login.dart';
 import 'package:mobileapp/Screens/preset.dart';
