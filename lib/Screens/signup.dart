@@ -43,6 +43,8 @@ class SignUpScreen extends StatelessWidget {
             const SizedBox(height: 10),
             _buildTextFieldWithIcon(Icons.email, 'Email'),
             const SizedBox(height: 10),
+            _buildTextFieldWithIcon(Icons.person, 'Username'),
+            const SizedBox(height: 10),
             _buildTextFieldWithIcon(Icons.lock, 'Password', isPassword: true),
             const SizedBox(height: 20),
             ElevatedButton(
