@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1062001949517",
+    "project_id": "bellboard-2024",
+    "storage_bucket": "bellboard-2024.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1062001949517:android:1af68f7295001ef6375504",
+        "android_client_info": {
+          "package_name": "com.example.mobileapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBf5wIfnaabJW3Jqw9bJjVEbwXCSNNIOaw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

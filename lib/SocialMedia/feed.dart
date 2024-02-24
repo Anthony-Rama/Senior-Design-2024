@@ -5,6 +5,7 @@ import 'package:mobileapp/Screens/preset.dart';
 import 'package:mobileapp/Screens/stats.dart';
 import 'package:mobileapp/Screens/leaderboards.dart';
 import 'package:mobileapp/Screens/settings.dart';
+import 'package:mobileapp/SocialMedia/create_post.dart';
 
 class FeedScreen extends StatelessWidget {
   const FeedScreen({Key? key}) : super(key: key);
@@ -24,6 +25,17 @@ class FeedScreen extends StatelessWidget {
           icon: const Icon(Icons.menu, color: Colors.white),
           onPressed: () => scaffoldKey.currentState?.openDrawer(),
         ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.add, color: Colors.white),
+            onPressed: () async {
+              await Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => AddPostScreen(
+                        onPostAdded: (Post newPost) {},
+                      )));
+            },
+          ),
+        ],
       ),
       drawer: Drawer(
         child: ListView(
