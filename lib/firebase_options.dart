@@ -17,10 +17,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -28,10 +25,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -49,20 +43,39 @@ class DefaultFirebaseOptions {
     }
   }
 
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyBEh4nvUsyXgito_uczA6gqUspHfMRrez8',
+    appId: '1:1062001949517:web:96aad9bcaeffc8b6375504',
+    messagingSenderId: '1062001949517',
+    projectId: 'bellboard-2024',
+    authDomain: 'bellboard-2024.firebaseapp.com',
+    storageBucket: 'bellboard-2024.appspot.com',
+    measurementId: 'G-H5CRST356T',
+  );
+
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBOr5Xu7cVn9wcUuFt4SOCZOTfKRsLAl8g',
-    appId: '1:708459998039:android:fb4669485228dc15da2c12',
-    messagingSenderId: '708459998039',
-    projectId: 'pixel-connect-2a564',
-    storageBucket: 'pixel-connect-2a564.appspot.com',
+    apiKey: 'AIzaSyBf5wIfnaabJW3Jqw9bJjVEbwXCSNNIOaw',
+    appId: '1:1062001949517:android:1af68f7295001ef6375504',
+    messagingSenderId: '1062001949517',
+    projectId: 'bellboard-2024',
+    storageBucket: 'bellboard-2024.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDA06AgNoSeknycS5SXudeESDsP_jJ6BW8',
-    appId: '1:708459998039:ios:c63e9227ccf9ee36da2c12',
-    messagingSenderId: '708459998039',
-    projectId: 'pixel-connect-2a564',
-    storageBucket: 'pixel-connect-2a564.appspot.com',
-    iosBundleId: 'com.example.pixelConnect',
+    apiKey: 'AIzaSyApOlqjTrxEk6Y0-VKH1mGRs3bgzriWvmA',
+    appId: '1:1062001949517:ios:8a7bb375928e2a6f375504',
+    messagingSenderId: '1062001949517',
+    projectId: 'bellboard-2024',
+    storageBucket: 'bellboard-2024.appspot.com',
+    iosBundleId: 'com.example.mobileapp',
+  );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyApOlqjTrxEk6Y0-VKH1mGRs3bgzriWvmA',
+    appId: '1:1062001949517:ios:88dd6fc3985ea7d3375504',
+    messagingSenderId: '1062001949517',
+    projectId: 'bellboard-2024',
+    storageBucket: 'bellboard-2024.appspot.com',
+    iosBundleId: 'com.example.mobileapp.RunnerTests',
   );
 }
