@@ -7,7 +7,7 @@ import 'package:mobileapp/Screens/settings.dart';
 import 'package:mobileapp/Screens/stats.dart';
 
 class Leaderboards extends StatelessWidget {
-  const Leaderboards({Key? key}) : super(key: key);
+  const Leaderboards({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -200,7 +200,7 @@ class Leaderboards extends StatelessWidget {
 
 // Global Leaderboards Screen
 class GlobalLeaderboard extends StatelessWidget {
-  const GlobalLeaderboard({Key? key}) : super(key: key);
+  const GlobalLeaderboard({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -283,7 +283,7 @@ class GlobalLeaderboard extends StatelessWidget {
 
 // Squad Leaderboards Screen
 class SquadLeaderboard extends StatelessWidget {
-  const SquadLeaderboard({Key? key}) : super(key: key);
+  const SquadLeaderboard({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -353,7 +353,7 @@ class SquadLeaderboard extends StatelessWidget {
 class GroupDetailScreen extends StatelessWidget {
   final Map<String, dynamic> group;
 
-  const GroupDetailScreen({Key? key, required this.group}) : super(key: key);
+  const GroupDetailScreen({super.key, required this.group});
 
   @override
   Widget build(BuildContext context) {
@@ -388,7 +388,7 @@ class GroupDetailScreen extends StatelessWidget {
 }
 
 class CreateGroupScreen extends StatefulWidget {
-  const CreateGroupScreen({Key? key}) : super(key: key);
+  const CreateGroupScreen({super.key});
 
   @override
   _CreateGroupScreenState createState() => _CreateGroupScreenState();

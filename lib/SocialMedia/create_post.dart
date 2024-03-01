@@ -66,7 +66,7 @@ class FirestoreService {
 class AddPostButton extends StatelessWidget {
   final Function(Post) onPostAdded;
 
-  const AddPostButton({required this.onPostAdded});
+  const AddPostButton({super.key, required this.onPostAdded});
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +88,7 @@ class AddPostButton extends StatelessWidget {
 class AddPostScreen extends StatefulWidget {
   final Function(Post) onPostAdded;
 
-  const AddPostScreen({required this.onPostAdded});
+  const AddPostScreen({super.key, required this.onPostAdded});
 
   @override
   _AddPostScreenState createState() => _AddPostScreenState();
@@ -177,7 +177,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
                     width: 200,
                   ),
                 if (_video != null)
-                  Container(
+                  SizedBox(
                     height: 200,
                     width: 200,
                     child: AspectRatio(
