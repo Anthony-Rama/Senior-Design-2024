@@ -63,11 +63,11 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyApOlqjTrxEk6Y0-VKH1mGRs3bgzriWvmA',
-    appId: '1:1062001949517:ios:8a7bb375928e2a6f375504',
+    appId: '1:1062001949517:ios:35e3ad1d67c479fa375504',
     messagingSenderId: '1062001949517',
     projectId: 'bellboard-2024',
     storageBucket: 'bellboard-2024.appspot.com',
-    iosBundleId: 'com.example.mobileapp',
+    iosBundleId: 'com.SeniorDesign2024.mobileapp',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
