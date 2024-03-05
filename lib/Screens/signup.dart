@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:mobileapp/SocialMedia/feed.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SignUpScreen extends StatelessWidget {
-  const SignUpScreen({super.key});
+  SignUpScreen({super.key});
 
+  final TextEditingController _firstnameController = TextEditingController();
+  final TextEditingController _lastnameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,28 +45,69 @@ class SignUpScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            _buildTextFieldWithIcon(Icons.person, 'First Name'),
+            _buildTextFieldWithIcon(Icons.person, 'First Name', _firstnameController),
             const SizedBox(height: 10),
-            _buildTextFieldWithIcon(Icons.person, 'Last Name'),
+            _buildTextFieldWithIcon(Icons.person, 'Last Name', _lastnameController),
             const SizedBox(height: 10),
-            _buildTextFieldWithIcon(Icons.email, 'Email'),
+            _buildTextFieldWithIcon(Icons.email, 'Email', _emailController),
             const SizedBox(height: 10),
-            _buildTextFieldWithIcon(Icons.person, 'Username'),
+            _buildTextFieldWithIcon(Icons.person, 'Username', _usernameController),
             const SizedBox(height: 10),
-            _buildTextFieldWithIcon(Icons.lock, 'Password', isPassword: true),
+            _buildTextFieldWithIcon(Icons.lock, 'Password', _passwordController, isPassword: true),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 //TODO: Placeholder for SIGNUP logic
-                Navigator.pushReplacement(
+                 try {
+                  // Sign up the user using Firebase Authentication
+                  UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                    email: _emailController.text,
+                    password: _passwordController.text,
+                  );
+
+                  // Get the user ID
+                  String userId = userCredential.user!.uid;
+
+                  // Save additional user information to Firestore database
+                  await FirebaseFirestore.instance.collection('users').doc(userId).set({
+                    'firstName': _firstnameController.text,
+                    'lastName': _lastnameController.text,
+                    'email': _emailController.text,
+                    'username': _usernameController.text,
+                 });
+
+                  // Navigate to the next screen
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const FeedScreen()),
+                  );
+                } catch (e) {
+                  
+                  print('Error signing up: $e');
+                  
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Error signing up: $e'),
+                      backgroundColor: Colors.red,));
+                
+                
+                /*String res = await AuthMethods().signUpUser(
+                  email: _emailController.text,
+                  password: _passwordController.text,
+                  username: _usernameController.text,
+                  firstname: _firstnameController.text,
+                  lastname: _lastnameController.text,
+                )*/
+
+                /*Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (context) => const FeedScreen()),
-                );
-              },
+                );*/
+              }},
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red[400],
               ),
-              child: const Text(
+              child: Text(
                 'Sign Up',
                 style: TextStyle(
                   color: Colors.white,
@@ -66,14 +115,13 @@ class SignUpScreen extends StatelessWidget {
                   fontSize: 20,
                 ),
               ),
-            ),
+             ), //child: null,
           ],
         ),
-      ),
-    );
+    ));
   }
 
-  Widget _buildTextFieldWithIcon(IconData icon, String hintText,
+  Widget _buildTextFieldWithIcon(IconData icon, String hintText, TextEditingController firstnameController,
       {bool isPassword = false}) {
     return TextField(
       obscureText: isPassword,
