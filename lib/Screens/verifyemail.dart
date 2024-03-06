@@ -47,7 +47,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  'A verification link has been sent to ${user.emailVerified}, please verify.',
+                  'A verification link has been sent to your email, please verify.',
                   style: TextStyle(fontSize: 18),
                   textAlign: TextAlign.center,
                 ),
