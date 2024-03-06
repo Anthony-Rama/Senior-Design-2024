@@ -5,15 +5,16 @@ import 'package:mobileapp/Screens/signup.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+  const LoginScreen({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _MyAppState createState() => _MyAppState();
 }
 
 class _MyAppState extends State<LoginScreen> {
-  final TextEditingController _emailController = TextEditingController();     
-  final TextEditingController _passwordController = TextEditingController();  
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   /*@override
   void dispose() {
@@ -56,7 +57,7 @@ class _MyAppState extends State<LoginScreen> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 15),
                         child: TextFormField(
-                          controller: _emailController,     
+                          controller: _emailController,
                           keyboardType: TextInputType.emailAddress,
                           decoration: InputDecoration(
                             //labelText: 'Email',
@@ -77,7 +78,7 @@ class _MyAppState extends State<LoginScreen> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 15),
                         child: TextFormField(
-                          controller: _passwordController,   ////////
+                          controller: _passwordController, 
                           keyboardType: TextInputType.visiblePassword,
                           decoration: InputDecoration(
                             //labelText: 'Password',
@@ -106,26 +107,31 @@ class _MyAppState extends State<LoginScreen> {
                           onPressed: () async {
                             try {
                               // Sign in the user using Firebase Authentication
-                              await FirebaseAuth.instance.signInWithEmailAndPassword(
+                              await FirebaseAuth.instance
+                                  .signInWithEmailAndPassword(
                                 email: _emailController.text,
                                 password: _passwordController.text,
                               );
-                               // Navigate to the feed screen after successful login
+                              // Navigate to the feed screen after successful login
+                              // ignore: use_build_context_synchronously
                               Navigator.pushReplacement(
                                 context,
-                                MaterialPageRoute(builder: (context) => const FeedScreen()),
+                                MaterialPageRoute(
+                                    builder: (context) => const FeedScreen()),
                               );
                             } catch (e) {
                               // Handle errors
                               print('Error signing in: $e');
                               // Display error message to the user
+                              // ignore: use_build_context_synchronously
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text('Error signing in: $e'),
-                                  backgroundColor: Colors.red,),
+                                  backgroundColor: Colors.red,
+                                ),
                               );
                             }
-                           /*Navigator.push(
+                            /*Navigator.push(
                            context,
                             MaterialPageRoute(
                             builder: (context) => const FeedScreen()),
