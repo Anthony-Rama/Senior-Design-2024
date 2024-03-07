@@ -3,7 +3,7 @@ import 'package:mobileapp/Screens/login.dart';
 import 'package:mobileapp/SocialMedia/feed.dart';
 import 'package:mobileapp/Screens/signup.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
+import 'backend_resources/firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
