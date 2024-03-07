@@ -5,6 +5,8 @@ import 'package:mobileapp/Screens/login.dart';
 //import 'package:mobileapp/SocialMedia/feed.dart';
 
 class VerifyEmailScreen extends StatefulWidget {
+  const VerifyEmailScreen({super.key});
+
   @override
   _VerifyEmailScreenState createState() => _VerifyEmailScreenState();
 }
@@ -19,7 +21,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
     user = auth.currentUser!;
     user.sendEmailVerification();
 
-    timer = Timer.periodic(Duration(seconds: 5), (timer) {
+    timer = Timer.periodic(const Duration(seconds: 5), (timer) {
       checkEmailVerified();
     });
     super.initState();
@@ -40,8 +42,8 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
               const Text('VERIFICATION', style: TextStyle(color: Colors.white)),
           backgroundColor: Colors.red[400],
         ),
-        body: Padding(
-            padding: const EdgeInsets.all(16.0),
+        body: const Padding(
+            padding: EdgeInsets.all(16.0),
             //body: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -77,7 +79,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
     if (user.emailVerified) {
       timer.cancel();
       Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => LoginScreen()));
+          MaterialPageRoute(builder: (context) => const LoginScreen()));
     }
   }
 }

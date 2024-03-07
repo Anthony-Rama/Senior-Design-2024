@@ -8,7 +8,7 @@ import 'package:mobileapp/Screens/settings.dart';
 import 'package:mobileapp/SocialMedia/create_post.dart';
 
 class FeedScreen extends StatelessWidget {
-  const FeedScreen({Key? key}) : super(key: key);
+  const FeedScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,7 @@ class FeedScreen extends StatelessWidget {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.add, color: Colors.white),
+            icon: const Icon(Icons.add, color: Colors.white),
             onPressed: () async {
               await Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) => AddPostScreen(

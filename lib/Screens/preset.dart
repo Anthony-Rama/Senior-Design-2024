@@ -177,7 +177,7 @@ class PresetScreen extends StatelessWidget {
 class DropdownListItem extends StatefulWidget {
   final ListItem listItem;
 
-  const DropdownListItem({Key? key, required this.listItem}) : super(key: key);
+  const DropdownListItem({super.key, required this.listItem});
 
   @override
   _DropdownListItemState createState() => _DropdownListItemState();

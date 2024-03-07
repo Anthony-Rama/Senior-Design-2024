@@ -5,7 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mobileapp/Screens/verifyemail.dart';
 
 class SignUpScreen extends StatelessWidget {
-  SignUpScreen({Key? key}) : super(key: key);
+  SignUpScreen({super.key});
 
   final TextEditingController _firstnameController = TextEditingController();
   final TextEditingController _lastnameController = TextEditingController();
@@ -53,7 +53,7 @@ class SignUpScreen extends StatelessWidget {
 
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => VerifyEmailScreen()),
+        MaterialPageRoute(builder: (context) => const VerifyEmailScreen()),
       );
     } catch (e) {
       print('Error signing up: $e');
@@ -122,7 +122,7 @@ class SignUpScreen extends StatelessWidget {
                     _usernameController.text.isEmpty ||
                     _passwordController.text.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
+                    const SnackBar(
                       content: Text('Please fill all fields'),
                       backgroundColor: Colors.red,
                     ),
@@ -136,7 +136,7 @@ class SignUpScreen extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red[400],
               ),
-              child: Text(
+              child: const Text(
                 'Sign Up',
                 style: TextStyle(
                   color: Colors.white,
