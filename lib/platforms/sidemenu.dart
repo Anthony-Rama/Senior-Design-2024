@@ -8,7 +8,7 @@ import 'package:mobileapp/Screens/login.dart';
 import 'package:mobileapp/platforms/social_media_platform.dart';
 
 class sideMenu extends StatelessWidget {
-  const sideMenu({Key? key}) : super(key: key);
+  const sideMenu({super.key});
 
   @override
   Widget build(BuildContext context) {

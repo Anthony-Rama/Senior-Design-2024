@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobileapp/SocialMedia/feed.dart';
 
 class MobileScreenLayout extends StatefulWidget {
-  const MobileScreenLayout({Key? key}) : super(key: key);
+  const MobileScreenLayout({super.key});
 
   @override
   State<MobileScreenLayout> createState() => _MobileScreenLayoutState();
@@ -40,15 +40,15 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
       body: PageView(
         controller: pageController,
         onPageChanged: onPageChanged,
+        physics:
+            const NeverScrollableScrollPhysics(),
         children: const [
           FeedScreen(),
           Center(child: Text('Search')),
           Center(child: Text('Add Post')),
           Center(child: Text('Notifs')),
           Center(child: Text('Profile')),
-        ],
-        physics:
-            NeverScrollableScrollPhysics(), // Prevents swiping to switch tabs
+        ], // Prevents swiping to switch tabs
       ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed, // Fixed type for more than 3 items

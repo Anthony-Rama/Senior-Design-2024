@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mobileapp/Screens/login.dart';
-import 'package:mobileapp/SocialMedia/feed.dart';
 import 'package:mobileapp/Screens/signup.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:mobileapp/platforms/social_media_platform.dart';

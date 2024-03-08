@@ -1,10 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mobileapp/Screens/custom_routes.dart';
-import 'package:mobileapp/SocialMedia/feed.dart';
-import 'package:mobileapp/Screens/leaderboards.dart';
-import 'package:mobileapp/Screens/login.dart';
-import 'package:mobileapp/Screens/preset.dart';
-import 'package:mobileapp/Screens/settings.dart';
 import 'package:mobileapp/platforms/sidemenu.dart';
 
 class Stats extends StatefulWidget {
