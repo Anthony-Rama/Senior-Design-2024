@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobileapp/SocialMedia/addpost.dart';
 import 'package:mobileapp/SocialMedia/feed.dart';
 
 class MobileScreenLayout extends StatefulWidget {
@@ -40,12 +41,11 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
       body: PageView(
         controller: pageController,
         onPageChanged: onPageChanged,
-        physics:
-            const NeverScrollableScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         children: const [
           FeedScreen(),
           Center(child: Text('Search')),
-          Center(child: Text('Add Post')),
+          AddPostScreen(),
           Center(child: Text('Notifs')),
           Center(child: Text('Profile')),
         ], // Prevents swiping to switch tabs
