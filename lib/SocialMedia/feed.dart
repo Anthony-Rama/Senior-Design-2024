@@ -6,6 +6,7 @@ import 'package:mobileapp/Screens/stats.dart';
 import 'package:mobileapp/Screens/leaderboards.dart';
 import 'package:mobileapp/Screens/settings.dart';
 import 'package:mobileapp/SocialMedia/create_post.dart';
+import 'package:mobileapp/platforms/social_media_platform.dart';
 
 class FeedScreen extends StatelessWidget {
   const FeedScreen({super.key});
@@ -63,7 +64,8 @@ class FeedScreen extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const FeedScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => const MobileScreenLayout()),
                 );
               },
             ),
