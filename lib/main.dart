@@ -4,7 +4,6 @@ import 'package:mobileapp/SocialMedia/feed.dart';
 import 'package:mobileapp/Screens/signup.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:mobileapp/platforms/social_media_platform.dart';
-import 'package:mobileapp/platforms/responsive.dart';
 import 'backend_resources/firebase_options.dart';
 
 void main() async {

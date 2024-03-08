@@ -1,10 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobileapp/Screens/custom_routes.dart';
-import 'package:mobileapp/SocialMedia/feed.dart';
-import 'package:mobileapp/Screens/leaderboards.dart';
-import 'package:mobileapp/Screens/login.dart';
-import 'package:mobileapp/Screens/preset.dart';
-import 'package:mobileapp/Screens/stats.dart';
+import 'package:mobileapp/platforms/sidemenu.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -78,106 +73,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ],
         ),
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            SizedBox(
-              height: 123,
-              child: DrawerHeader(
-                decoration: BoxDecoration(
-                  color: Colors.red[400],
-                ),
-                child: const Center(
-                  child: Text(
-                    'MENU',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            ListTile(
-              title: const Text('Bellboard Feed'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const FeedScreen()),
-                );
-              },
-            ),
-            const Divider(),
-            ListTile(
-              title: const Text('Preset Routes'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => PresetScreen(),
-                  ),
-                );
-              },
-            ),
-            const Divider(),
-            ListTile(
-              title: const Text('Custom Routes'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const CustomRoutes()),
-                );
-              },
-            ),
-            const Divider(),
-            ListTile(
-              title: const Text('Stats'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const Stats()),
-                );
-              },
-            ),
-            const Divider(),
-            ListTile(
-              title: const Text('Leaderboards'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const Leaderboards()),
-                );
-              },
-            ),
-            const Divider(),
-            ListTile(
-              title: const Text('Settings'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        const SettingsScreen(), //TODO: change to settings screen
-                  ),
-                );
-              },
-            ),
-            const Divider(),
-            ListTile(
-              leading: const Icon(Icons.logout),
-              title: const Text('Logout'),
-              onTap: () {
-                // Implement user logout logic (e.g., clearing user session)
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => const LoginScreen()),
-                );
-              },
-            ),
-          ],
-        ),
-      ),
+      drawer: const sideMenu(),
     );
   }
 }
