@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-//import 'package:mobileapp/SocialMedia/feed.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mobileapp/Screens/verifyemail.dart';

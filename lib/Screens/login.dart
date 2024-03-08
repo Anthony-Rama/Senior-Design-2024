@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mobileapp/SocialMedia/feed.dart';
 import 'package:mobileapp/Screens/forgotpassword.dart';
 import 'package:mobileapp/Screens/signup.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:mobileapp/platforms/social_media_platform.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -78,7 +78,7 @@ class _MyAppState extends State<LoginScreen> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 15),
                         child: TextFormField(
-                          controller: _passwordController, 
+                          controller: _passwordController,
                           keyboardType: TextInputType.visiblePassword,
                           decoration: InputDecoration(
                             //labelText: 'Password',
@@ -117,7 +117,8 @@ class _MyAppState extends State<LoginScreen> {
                               Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => const FeedScreen()),
+                                    builder: (context) =>
+                                        const MobileScreenLayout()),
                               );
                             } catch (e) {
                               // Handle errors

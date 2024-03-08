@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:mobileapp/Screens/login.dart';
-import 'package:mobileapp/SocialMedia/feed.dart';
-import 'package:mobileapp/Screens/signup.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
+import 'package:provider/provider.dart';
+import 'backend_resources/firebase_options.dart';
+import 'package:mobileapp/Screens/login.dart';
+import 'package:mobileapp/Screens/signup.dart';
+import 'package:mobileapp/platforms/social_media_platform.dart';
+import 'package:mobileapp/providers/user_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,19 +21,21 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+    // Wrap MaterialApp with ChangeNotifierProvider
+    return ChangeNotifierProvider(
+      create: (context) => UserProvider(), // Instantiate your UserProvider
+      child: MaterialApp(
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        initialRoute: '/login',
+        routes: {
+          '/signup': (context) => SignUpScreen(),
+          '/login': (context) => const LoginScreen(),
+          '/home': (context) => const MobileScreenLayout(),
+        },
       ),
-      // Define initial route as login screen
-      initialRoute: '/login',
-      // Define routes
-      routes: {
-        '/signup': (context) => SignUpScreen(),
-        '/login': (context) => const LoginScreen(),
-        '/home': (context) => const FeedScreen(),
-      },
     );
   }
 }
