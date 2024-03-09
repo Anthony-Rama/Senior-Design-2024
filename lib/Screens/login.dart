@@ -3,6 +3,7 @@ import 'package:mobileapp/Screens/forgotpassword.dart';
 import 'package:mobileapp/Screens/signup.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mobileapp/platforms/social_media_platform.dart';
+import 'package:mobileapp/Screens/resetemail.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -67,10 +68,12 @@ class _MyAppState extends State<LoginScreen> {
                               borderRadius: BorderRadius.circular(20.0),
                             ),
                           ),
-                          onChanged: (String
-                              value) {}, // add login logic for email in here i think
-                          validator: (value) {
-                            return value!.isEmpty ? 'Please enter email' : null;
+                          //onChanged: (String
+                            //  value) {}, // add login logic for email in here i think
+                          validator: (value) { if (value!.isEmpty) {
+                            return 'Please enter your email';
+                            }
+                            return null;
                           },
                         ),
                       ),
@@ -88,12 +91,13 @@ class _MyAppState extends State<LoginScreen> {
                               borderRadius: BorderRadius.circular(20.0),
                             ),
                           ),
-                          onChanged: (String
-                              value) {}, // add login logic for password here i think
+                          //onChanged: (String
+                              //value) {}, // add login logic for password here i think
                           validator: (value) {
-                            return value!.isEmpty
-                                ? 'Please enter password'
-                                : null;
+                            if (value!.isEmpty) {
+                             return 'Please enter your password';
+                             }
+                             return null;
                           },
                         ),
                       ),
@@ -181,7 +185,21 @@ class _MyAppState extends State<LoginScreen> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                      )
+                      ),
+
+                      TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        ResetEmailScreen()));
+                          },
+                          child: Text('Reset Email here!',
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.red[400],
+                                  fontWeight: FontWeight.bold)))
                     ],
                   ),
                 ),
