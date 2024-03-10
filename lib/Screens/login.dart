@@ -3,27 +3,22 @@ import 'package:mobileapp/Screens/forgotpassword.dart';
 import 'package:mobileapp/Screens/signup.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mobileapp/platforms/social_media_platform.dart';
+import 'package:mobileapp/Screens/resetemail.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  const LoginScreen({Key? key}) : super(key: key);
 
   @override
-  // ignore: library_private_types_in_public_api
   _MyAppState createState() => _MyAppState();
 }
 
 class _MyAppState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  String? _errorMessage;
+  String? _emailError;
+  String? _passwordError;
 
-  /*@override
-  void dispose() {
-    emailController.dispose();
-    passwordController.dispose();
-
-    super.dispose();
-  }
-  */
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -60,83 +55,101 @@ class _MyAppState extends State<LoginScreen> {
                           controller: _emailController,
                           keyboardType: TextInputType.emailAddress,
                           decoration: InputDecoration(
-                            //labelText: 'Email',
                             hintText: 'Enter email',
                             prefixIcon: const Icon(Icons.email),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(20.0),
                             ),
+                            errorText: _emailError,
                           ),
-                          onChanged: (String
-                              value) {}, // add login logic for email in here i think
                           validator: (value) {
-                            return value!.isEmpty ? 'Please enter email' : null;
+                            if (value!.isEmpty) {
+                              setState(() {
+                                _emailError = 'Please enter your email';
+                              });
+                              return 'Please enter your email';
+                            }
+                            return null;
                           },
                         ),
                       ),
-                      const SizedBox(height: 30),
+                      const SizedBox(height: 10),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 15),
                         child: TextFormField(
                           controller: _passwordController,
                           keyboardType: TextInputType.visiblePassword,
                           decoration: InputDecoration(
-                            //labelText: 'Password',
                             hintText: 'Enter password',
                             prefixIcon: const Icon(Icons.lock),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(20.0),
                             ),
+                            errorText: _passwordError,
                           ),
-                          onChanged: (String
-                              value) {}, // add login logic for password here i think
                           validator: (value) {
-                            return value!.isEmpty
-                                ? 'Please enter password'
-                                : null;
+                            if (value!.isEmpty) {
+                              setState(() {
+                                _passwordError = 'Please enter your password';
+                              });
+                              return 'Please enter your password';
+                            }
+                            return null;
                           },
                         ),
                       ),
+                      if (_errorMessage != null)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          child: Text(
+                            _errorMessage!,
+                            style: TextStyle(color: Colors.red),
+                          ),
+                        ),
                       const SizedBox(height: 30),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 35),
-                        //child: ClipRRect(
-                        //borderRadius: BorderRadius.circular(20),
                         child: MaterialButton(
                           minWidth: double.infinity,
                           onPressed: () async {
-                            try {
-                              // Sign in the user using Firebase Authentication
-                              await FirebaseAuth.instance
-                                  .signInWithEmailAndPassword(
-                                email: _emailController.text,
-                                password: _passwordController.text,
-                              );
-                              // Navigate to the feed screen after successful login
-                              // ignore: use_build_context_synchronously
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const MobileScreenLayout()),
-                              );
-                            } catch (e) {
-                              // Handle errors
-                              print('Error signing in: $e');
-                              // Display error message to the user
-                              // ignore: use_build_context_synchronously
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text('Error signing in: $e'),
-                                  backgroundColor: Colors.red,
-                                ),
-                              );
+                            setState(() {
+                              _emailError = null;
+                              _passwordError = null;
+                              _errorMessage = null;
+                            });
+                            if (_emailController.text.isEmpty ||
+                                _passwordController.text.isEmpty) {
+                              setState(() {
+                                if (_emailController.text.isEmpty) {
+                                  _emailError = 'Please enter your email';
+                                }
+                                if (_passwordController.text.isEmpty) {
+                                  _passwordError = 'Please enter your password';
+                                }
+                              });
+                            } else {
+                              try {
+                                // sign in using Firebase Authentication
+                                await FirebaseAuth.instance
+                                    .signInWithEmailAndPassword(
+                                  email: _emailController.text,
+                                  password: _passwordController.text,
+                                );
+                                // navigate to feed screen
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const MobileScreenLayout()),
+                                );
+                              } catch (e) {
+                                print('Error signing in: $e');
+                                setState(() {
+                                  _errorMessage =
+                                      'Invalid email or password. Please try again.';
+                                });
+                              }
                             }
-                            /*Navigator.push(
-                           context,
-                            MaterialPageRoute(
-                            builder: (context) => const FeedScreen()),
-                          );*/
                           },
                           color: Colors.red[400],
                           textColor: Colors.white,
@@ -146,8 +159,6 @@ class _MyAppState extends State<LoginScreen> {
                           child: const Text('Log in'),
                         ),
                       ),
-                      // ),
-
                       TextButton(
                         onPressed: () {
                           Navigator.push(
@@ -157,7 +168,7 @@ class _MyAppState extends State<LoginScreen> {
                           );
                         },
                         child: Text(
-                          'Dont have an account? Sign up!',
+                          'Don\'t have an account? Sign up!',
                           style: TextStyle(
                             fontSize: 15,
                             color: Colors.red[400],
@@ -181,7 +192,19 @@ class _MyAppState extends State<LoginScreen> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                      )
+                      ),
+                      TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ResetEmailScreen()));
+                          },
+                          child: Text('Reset Email',
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.red[400],
+                                  fontWeight: FontWeight.bold))),
                     ],
                   ),
                 ),
@@ -193,11 +216,3 @@ class _MyAppState extends State<LoginScreen> {
     );
   }
 }
-
-/*Future logIn() async {
-  await FirebaseAuth.signInWithEmailAndPassword(
-    email: emailController.text.trim(),
-    password: passwordController.text.trim(),
-  );
-}
-*/
