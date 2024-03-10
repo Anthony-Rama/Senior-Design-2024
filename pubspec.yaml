@@ -30,10 +30,12 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  intl: ^0.17.0
   firebase_core: ^2.25.4
   firebase_auth: ^4.17.4
   cloud_firestore: ^4.15.4
   firebase_storage: ^11.6.6
+  firebase_app_check: ^0.2.1+17
   image_picker: ^1.0.7
   video_player: ^2.7.2
 

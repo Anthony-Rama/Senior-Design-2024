@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:mobileapp/SocialMedia/addpost.dart';
+import 'package:mobileapp/SocialMedia/create_post.dart';
 import 'package:mobileapp/SocialMedia/feed.dart';
 
 class MobileScreenLayout extends StatefulWidget {
-  const MobileScreenLayout({super.key});
+  const MobileScreenLayout({Key? key}) : super(key: key);
 
   @override
   State<MobileScreenLayout> createState() => _MobileScreenLayoutState();
@@ -12,6 +12,8 @@ class MobileScreenLayout extends StatefulWidget {
 class _MobileScreenLayoutState extends State<MobileScreenLayout> {
   int _page = 0;
   late PageController pageController;
+
+  List<Post> posts = [];
 
   @override
   void initState() {
@@ -35,6 +37,12 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
     pageController.jumpToPage(page);
   }
 
+  void addNewPost(Post newPost) {
+    setState(() {
+      posts.insert(0, newPost);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,18 +50,20 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
         controller: pageController,
         onPageChanged: onPageChanged,
         physics: const NeverScrollableScrollPhysics(),
-        children: const [
-          FeedScreen(),
+        children: [
+          FeedScreen(posts: posts),
           Center(child: Text('Search')),
-          AddPostScreen(),
+          AddPostScreen(
+            onPostAdded: addNewPost,
+          ),
           Center(child: Text('Notifs')),
           Center(child: Text('Profile')),
-        ], // Prevents swiping to switch tabs
+        ],
       ),
       bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed, // Fixed type for more than 3 items
+        type: BottomNavigationBarType.fixed,
         backgroundColor: Colors.white,
-        selectedItemColor: Colors.red, // Change as needed
+        selectedItemColor: Colors.red,
         unselectedItemColor: Colors.grey,
         items: const [
           BottomNavigationBarItem(
