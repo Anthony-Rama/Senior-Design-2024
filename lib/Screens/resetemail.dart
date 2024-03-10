@@ -4,6 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mobileapp/Screens/login.dart';
 
 class ResetEmailScreen extends StatefulWidget {
+  const ResetEmailScreen({super.key});
+
   @override
   _ResetEmailScreenState createState() => _ResetEmailScreenState();
 }
@@ -22,7 +24,7 @@ class _ResetEmailScreenState extends State<ResetEmailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Change Email',
           style: TextStyle(color: Colors.white),
         ),
@@ -34,23 +36,23 @@ class _ResetEmailScreenState extends State<ResetEmailScreen> {
               MaterialPageRoute(builder: (context) => const LoginScreen()),
             );
           },
-          icon: Icon(
+          icon: const Icon(
             Icons.arrow_back,
             color: Colors.white,
           ),
         ),
       ),
       body: Padding(
-        padding: EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(20.0),
         child: Form(
           key: _formKey,
           child: Column(
             children: [
               TextFormField(
                 controller: _currentEmailController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Current Email',
-                  prefixIcon: const Icon(Icons.email),
+                  prefixIcon: Icon(Icons.email),
                 ),
                 validator: (value) {
                   if (value!.isEmpty) {
@@ -61,9 +63,9 @@ class _ResetEmailScreenState extends State<ResetEmailScreen> {
               ),
               TextFormField(
                 controller: _newEmailController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'New Email',
-                  prefixIcon: const Icon(Icons.email),
+                  prefixIcon: Icon(Icons.email),
                 ),
                 validator: (value) {
                   if (value!.isEmpty) {
@@ -75,9 +77,9 @@ class _ResetEmailScreenState extends State<ResetEmailScreen> {
               TextFormField(
                 controller: _passwordController,
                 obscureText: true,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Password',
-                  prefixIcon: const Icon(Icons.lock),
+                  prefixIcon: Icon(Icons.lock),
                 ),
                 validator: (value) {
                   if (value!.isEmpty) {
@@ -86,7 +88,7 @@ class _ResetEmailScreenState extends State<ResetEmailScreen> {
                   return null;
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
@@ -117,14 +119,15 @@ class _ResetEmailScreenState extends State<ResetEmailScreen> {
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
-                            title: Text('Success'),
-                            content: Text(
+                            title: const Text('Success'),
+                            content: const Text(
                               'A verification link has been sent to your email, please verify by clicking the link.',
                             ),
                             actions: [
                               TextButton(
                                 onPressed: () {
-                                  Navigator.of(context).pop();
+                                  Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) => LoginScreen()));
                                 },
                                 child: Text(
                                   'OK',
@@ -146,16 +149,16 @@ class _ResetEmailScreenState extends State<ResetEmailScreen> {
                   backgroundColor:
                       MaterialStateProperty.all<Color>(Colors.red[400]!),
                 ),
-                child: Text(
+                child: const Text(
                   'Reset Email',
                   style: TextStyle(color: Colors.white),
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               if (_errorMessage.isNotEmpty)
                 Text(
                   _errorMessage,
-                  style: TextStyle(color: Colors.red),
+                  style: const TextStyle(color: Colors.red),
                 ),
             ],
           ),
