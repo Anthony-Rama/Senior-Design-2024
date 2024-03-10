@@ -88,7 +88,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            'To change your email, logout and click "Reset Email here!"',
+                            'To change your email, logout and click "Reset Email"',
                             style: TextStyle(fontSize: 16),
                           ),
                         ],
