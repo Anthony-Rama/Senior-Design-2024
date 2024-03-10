@@ -119,7 +119,7 @@ class _ResetEmailScreenState extends State<ResetEmailScreen> {
                           return AlertDialog(
                             title: Text('Success'),
                             content: Text(
-                              'Your email has been updated successfully.',
+                              'A verification link has been sent to your email, please verify by clicking the link.',
                             ),
                             actions: [
                               TextButton(
