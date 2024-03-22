@@ -35,7 +35,6 @@ class _SearchScreenState extends State<SearchScreen> {
           ? FutureBuilder<QuerySnapshot>(
               future: FirebaseFirestore.instance
                   .collection('users')
-                  // Adjusted query for a closer match
                   .where('username',
                       isGreaterThanOrEqualTo: searchController.text)
                   .where('username',
@@ -53,7 +52,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) => ProfileScreen(
-                            uid: doc.id, // Use document ID for UID
+                            uid: doc.id,
                           ),
                         ),
                       ),
@@ -65,7 +64,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 );
               },
             )
-          : Container(), // Show an empty container when there's no input
+          : Container(), // To show an empty container when there's no input
     );
   }
 }
