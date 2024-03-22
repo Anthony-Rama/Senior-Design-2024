@@ -118,6 +118,9 @@ class _AddPostScreenState extends State<AddPostScreen> {
     if (pickedFile != null) {
       setState(() {
         _image = pickedFile;
+        _video = null; // Reset video if image is selected
+        _videoController?.pause();
+        _videoController = null;
       });
     } else {
       print('No image selected.');
@@ -131,6 +134,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
       try {
         setState(() {
           _video = pickedFile;
+          _image = null; // Reset image if video is selected
           _videoController = VideoPlayerController.file(File(_video!.path))
             ..initialize().then((_) {
               setState(() {});
@@ -191,18 +195,33 @@ class _AddPostScreenState extends State<AddPostScreen> {
               if (_image != null)
                 Image.file(
                   File(_image!.path),
-                  height: 200,
-                  width: 200,
+                  height: 300,
+                  width: 400,
                 ),
               if (_video != null)
                 _videoController != null
-                    ? SizedBox(
-                        height: 200,
-                        width: 200,
-                        child: AspectRatio(
-                          aspectRatio: _videoController!.value.aspectRatio,
-                          child: VideoPlayer(_videoController!),
-                        ),
+                    ? Column(
+                        children: [
+                          AspectRatio(
+                            aspectRatio: _videoController!.value.aspectRatio,
+                            child: VideoPlayer(_videoController!),
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              if (_videoController!.value.isPlaying) {
+                                _videoController!.pause();
+                              } else {
+                                _videoController!.play();
+                              }
+                              setState(() {});
+                            },
+                            icon: Icon(
+                              _videoController!.value.isPlaying
+                                  ? Icons.pause
+                                  : Icons.play_arrow,
+                            ),
+                          ),
+                        ],
                       )
                     : const CircularProgressIndicator(),
               const SizedBox(height: 20),

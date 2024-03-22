@@ -106,12 +106,17 @@ class FeedScreen extends StatelessWidget {
                   final userData = userSnapshot.data!;
                   final userName = userData['username'] ?? 'Unknown User';
 
-                  return Text(
-                    '$userName',
-                    style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.red[400],
-                        fontWeight: FontWeight.bold),
+                  return Row(
+                    children: [
+                      Text(
+                        '$userName',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.red[400],
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   );
                 }
               },
@@ -132,6 +137,34 @@ class FeedScreen extends StatelessWidget {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.favorite_border, color: Colors.red[400]),
+                      onPressed: () {
+                        // Implement like functionality
+                      },
+                    ),
+                    SizedBox(width: 8),
+                  ],
+                ),
+                Row(
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.comment, color: Colors.red[400]),
+                      onPressed: () {
+                        // Implement comment functionality
+                      },
+                    ),
+                    SizedBox(width: 8),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
             _buildTimestamp(post.timestamp),
           ],
         ),
@@ -142,7 +175,7 @@ class FeedScreen extends StatelessWidget {
   Widget _buildTimestamp(String? timestamp) {
     final formattedTimestamp = _formatTimestamp(timestamp);
     return Text(
-      'Posted: $formattedTimestamp',
+      formattedTimestamp,
       style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
     );
   }
@@ -200,24 +233,14 @@ class _VideoPlayerWidgetState extends State<_VideoPlayerWidget> {
       future: _initializeVideoPlayerFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
-          return AspectRatio(
-            aspectRatio: _controller.value.aspectRatio,
-            child: Stack(
-              alignment: Alignment.bottomCenter,
-              children: [
-                VideoPlayer(_controller),
-                VideoProgressIndicator(
-                  _controller,
-                  allowScrubbing: true,
-                  colors: VideoProgressColors(
-                    playedColor: Colors.red,
-                    bufferedColor: Colors.grey,
-                    backgroundColor: Colors.black,
-                  ),
-                ),
-                _VideoPlayerControls(controller: _controller),
-              ],
-            ),
+          return Column(
+            children: [
+              AspectRatio(
+                aspectRatio: _controller.value.aspectRatio,
+                child: VideoPlayer(_controller),
+              ),
+              _VideoPlayerControls(controller: _controller),
+            ],
           );
         } else {
           return Center(child: CircularProgressIndicator());
@@ -234,34 +257,82 @@ class _VideoPlayerControls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        AnimatedSwitcher(
-          duration: Duration(milliseconds: 300),
-          reverseDuration: Duration(milliseconds: 300),
-          child: controller.value.isPlaying
-              ? SizedBox.shrink()
-              : Container(
-                  color: Colors.black26,
-                  child: Center(
-                    child: Icon(
-                      Icons.play_arrow,
-                      color: Colors.white,
-                      size: 50.0,
-                    ),
-                  ),
-                ),
+    return Column(
+      children: [
+        VideoProgressIndicator(
+          controller,
+          allowScrubbing: true,
+          colors: VideoProgressColors(
+            playedColor: Colors.red,
+            bufferedColor: Colors.grey,
+            backgroundColor: Colors.black,
+          ),
         ),
-        GestureDetector(
-          onTap: () {
-            if (controller.value.isPlaying) {
-              controller.pause();
-            } else {
-              controller.play();
-            }
-          },
+        SizedBox(height: 20),
+        SizedBox(
+          height: 40,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              IconButton(
+                icon: Icon(Icons.replay_5),
+                onPressed: () {
+                  controller
+                      .seekTo(controller.value.position - Duration(seconds: 5));
+                },
+              ),
+              IconButton(
+                icon: Icon(controller.value.isPlaying
+                    ? Icons.pause
+                    : Icons.play_arrow),
+                onPressed: () {
+                  if (controller.value.isPlaying) {
+                    controller.pause();
+                  } else {
+                    controller.play();
+                  }
+                },
+              ),
+              IconButton(
+                icon: Icon(Icons.forward_5),
+                onPressed: () {
+                  controller
+                      .seekTo(controller.value.position + Duration(seconds: 5));
+                },
+              ),
+              IconButton(
+                icon: Icon(
+                  controller.value.volume == 0
+                      ? Icons.volume_off
+                      : Icons.volume_up,
+                ),
+                onPressed: () {
+                  controller
+                      .setVolume(controller.value.volume == 0 ? 1.0 : 0.0);
+                },
+              ),
+            ],
+          ),
         ),
       ],
+    );
+  }
+}
+
+class VideoPlayerButton extends StatelessWidget {
+  final VoidCallback onPressed;
+  final IconData icon;
+
+  const VideoPlayerButton({
+    required this.onPressed,
+    required this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      icon: Icon(icon),
+      onPressed: onPressed,
     );
   }
 }
