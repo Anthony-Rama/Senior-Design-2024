@@ -5,15 +5,19 @@ import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:mobileapp/SocialMedia/feed.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:intl/intl.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Post {
+  final String userName;
+  final String userId;
   final String timestamp;
   final String? imageUrl;
   final String? videoUrl;
   final String caption;
 
   Post({
+    required this.userName,
+    required this.userId,
     required this.timestamp,
     this.imageUrl,
     this.videoUrl,
@@ -22,7 +26,9 @@ class Post {
 
   factory Post.fromFirestore(Map<String, dynamic> firestore, String id) {
     return Post(
-      timestamp: firestore['timestamp'] ?? '',
+      userName: firestore['userName'] ?? 'Unknown User',
+      userId: firestore['userId'] ?? '',
+      timestamp: firestore['timestamp'] ?? DateTime.now().toString(),
       imageUrl: firestore['imageUrl'],
       videoUrl: firestore['videoUrl'],
       caption: firestore['caption'] ?? '',
@@ -70,6 +76,7 @@ class FirestoreService {
   Future<void> addPost(Post post) async {
     try {
       await _db.collection('posts').add({
+        'userId': post.userId,
         'timestamp': post.timestamp,
         'imageUrl': post.imageUrl,
         'videoUrl': post.videoUrl,
@@ -97,6 +104,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
   XFile? _video;
   final ImagePicker _picker = ImagePicker();
   VideoPlayerController? _videoController;
+  bool _isUploading = false;
 
   @override
   void dispose() {
@@ -203,11 +211,14 @@ class _AddPostScreenState extends State<AddPostScreen> {
                 decoration: const InputDecoration(labelText: 'Add a caption'),
                 maxLines: null,
               ),
-              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () async {
                   final captionText = bodyController.text;
-                  if (captionText.isNotEmpty) {
+                  if (captionText.isNotEmpty && !_isUploading) {
+                    setState(() {
+                      _isUploading = true;
+                    });
+
                     String? imageUrl;
                     String? videoUrl;
 
@@ -221,31 +232,52 @@ class _AddPostScreenState extends State<AddPostScreen> {
                           .uploadMedia(_video!, 'post_videos');
                     }
 
-                    final post = Post(
-                      timestamp:
-                          DateFormat('MMMM dd, yyyy').format(DateTime.now()),
-                      caption: captionText,
-                      imageUrl: imageUrl,
-                      videoUrl: videoUrl,
-                    );
+                    final user = FirebaseAuth.instance.currentUser;
+                    if (user != null) {
+                      final post = Post(
+                        userName: user.displayName ?? 'Unknown User',
+                        userId: user.uid,
+                        timestamp: DateTime.now().toString(),
+                        caption: captionText,
+                        imageUrl: imageUrl,
+                        videoUrl: videoUrl,
+                      );
 
-                    await FirestoreService().addPost(post);
-                    widget.onPostAdded(post);
+                      await FirestoreService().addPost(post);
+                      widget.onPostAdded(post);
 
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => FeedScreen(posts: [])),
-                    );
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => FeedScreen(posts: []),
+                        ),
+                      );
+                    } else {
+                      // User is not signed in
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('User is not signed in.'),
+                        ),
+                      );
+                    }
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text('Title and body cannot be empty.'),
+                        content: Text('Caption cannot be empty.'),
                       ),
                     );
                   }
                 },
-                child: const Text('SUBMIT POST'),
+                child: _isUploading
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          CircularProgressIndicator(),
+                          SizedBox(width: 10),
+                          Text('Uploading...'),
+                        ],
+                      )
+                    : const Text('SUBMIT POST'),
                 style: ElevatedButton.styleFrom(
                   primary: Colors.red[400],
                   onPrimary: Colors.white,

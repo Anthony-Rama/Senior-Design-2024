@@ -2,6 +2,37 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:mobileapp/SocialMedia/create_post.dart';
 import 'package:mobileapp/platforms/sidemenu.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+class FirestoreService {
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
+
+  Future<DocumentSnapshot> getUser(String userId) async {
+    try {
+      DocumentSnapshot userDoc =
+          await _db.collection('users').doc(userId).get();
+
+      return userDoc;
+    } catch (e) {
+      print('Error getting user: $e');
+      throw e;
+    }
+  }
+
+  Future<List<Post>> getPosts() async {
+    try {
+      QuerySnapshot querySnapshot = await _db.collection('posts').get();
+      List<Post> posts = querySnapshot.docs.map((doc) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        return Post.fromFirestore(data, doc.id);
+      }).toList();
+      return posts;
+    } catch (e) {
+      print('Error fetching posts: $e');
+      return [];
+    }
+  }
+}
 
 class FeedScreen extends StatelessWidget {
   const FeedScreen({Key? key, required List<Post> posts}) : super(key: key);
@@ -9,6 +40,7 @@ class FeedScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+    final Map<String, dynamic> _userDataCache = {};
 
     return Scaffold(
       key: scaffoldKey,
@@ -41,7 +73,7 @@ class FeedScreen extends StatelessWidget {
               itemCount: posts.length,
               itemBuilder: (context, index) {
                 final post = posts[index];
-                return _buildPostItem(post);
+                return _buildPostItem(context, post, _userDataCache);
               },
             );
           }
@@ -50,7 +82,8 @@ class FeedScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPostItem(Post post) {
+  Widget _buildPostItem(
+      BuildContext context, Post post, Map<String, dynamic> userDataCache) {
     return Card(
       elevation: 3,
       margin: const EdgeInsets.symmetric(vertical: 8.0),
@@ -59,6 +92,30 @@ class FeedScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            FutureBuilder<DocumentSnapshot>(
+              future: FirestoreService().getUser(post.userId),
+              builder: (context, userSnapshot) {
+                if (userSnapshot.connectionState == ConnectionState.waiting) {
+                  return SizedBox(
+                    width: double.infinity,
+                    child: LinearProgressIndicator(),
+                  );
+                } else if (userSnapshot.hasError) {
+                  return Text('Error loading user: ${userSnapshot.error}');
+                } else {
+                  final userData = userSnapshot.data!;
+                  final userName = userData['username'] ?? 'Unknown User';
+
+                  return Text(
+                    '$userName',
+                    style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.red[400],
+                        fontWeight: FontWeight.bold),
+                  );
+                }
+              },
+            ),
             const SizedBox(height: 8),
             if (post.imageUrl != null)
               Image.network(
@@ -74,10 +131,38 @@ class FeedScreen extends StatelessWidget {
               post.caption,
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
+            const SizedBox(height: 8),
+            _buildTimestamp(post.timestamp),
           ],
         ),
       ),
     );
+  }
+
+  Widget _buildTimestamp(String? timestamp) {
+    final formattedTimestamp = _formatTimestamp(timestamp);
+    return Text(
+      'Posted: $formattedTimestamp',
+      style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
+    );
+  }
+
+  String _formatTimestamp(String? timestamp) {
+    if (timestamp == null || timestamp.isEmpty) {
+      return 'Unknown Time';
+    }
+
+    try {
+      final dateTime = DateTime.parse(timestamp);
+
+      final formattedTime = '${dateTime.hour}:${dateTime.minute}';
+      final formattedDate =
+          '${dateTime.day}/${dateTime.month}/${dateTime.year}';
+      return '$formattedTime, $formattedDate';
+    } catch (e) {
+      print('Error formatting timestamp: $e');
+      return 'Unknown Time';
+    }
   }
 }
 
