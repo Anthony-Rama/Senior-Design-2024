@@ -127,7 +127,7 @@ class _ResetEmailScreenState extends State<ResetEmailScreen> {
                               TextButton(
                                 onPressed: () {
                                   Navigator.push(context,
-                                  MaterialPageRoute(builder: (context) => LoginScreen()));
+                                  MaterialPageRoute(builder: (context) => const LoginScreen()));
                                 },
                                 child: Text(
                                   'OK',

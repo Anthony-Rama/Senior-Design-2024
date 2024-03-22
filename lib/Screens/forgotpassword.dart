@@ -39,7 +39,7 @@ class _ForgotPassScreenState extends State<ForgotPassScreen> {
       showDialog(
           context: context,
           builder: (context) {
-            return AlertDialog(
+            return const AlertDialog(
               content:
                   Text('The password reset link has been sent to your email!'),
             );

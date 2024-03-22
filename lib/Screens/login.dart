@@ -6,7 +6,7 @@ import 'package:mobileapp/platforms/social_media_platform.dart';
 import 'package:mobileapp/Screens/resetemail.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+  const LoginScreen({super.key});
 
   @override
   _MyAppState createState() => _MyAppState();
@@ -103,7 +103,7 @@ class _MyAppState extends State<LoginScreen> {
                           padding: const EdgeInsets.symmetric(vertical: 10),
                           child: Text(
                             _errorMessage!,
-                            style: TextStyle(color: Colors.red),
+                            style: const TextStyle(color: Colors.red),
                           ),
                         ),
                       const SizedBox(height: 30),
@@ -198,7 +198,7 @@ class _MyAppState extends State<LoginScreen> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => ResetEmailScreen()));
+                                    builder: (context) => const ResetEmailScreen()));
                           },
                           child: Text('Reset Email',
                               style: TextStyle(
