@@ -1,6 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobileapp/SocialMedia/addpost.dart';
 import 'package:mobileapp/SocialMedia/feed.dart';
+import 'package:mobileapp/SocialMedia/profile_screen.dart';
+import 'package:mobileapp/SocialMedia/search_screen.dart';
 
 class MobileScreenLayout extends StatefulWidget {
   const MobileScreenLayout({super.key});
@@ -42,12 +45,14 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
         controller: pageController,
         onPageChanged: onPageChanged,
         physics: const NeverScrollableScrollPhysics(),
-        children: const [
-          FeedScreen(),
-          Center(child: Text('Search')),
-          AddPostScreen(),
-          Center(child: Text('Notifs')),
-          Center(child: Text('Profile')),
+        children: [
+          const FeedScreen(),
+          const SearchScreen(),
+          const AddPostScreen(),
+          const Center(child: Text('Notifs')),
+          ProfileScreen(
+            uid: FirebaseAuth.instance.currentUser!.uid,
+          ),
         ], // Prevents swiping to switch tabs
       ),
       bottomNavigationBar: BottomNavigationBar(

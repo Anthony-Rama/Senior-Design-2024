@@ -8,7 +8,7 @@ import 'package:mobileapp/utils/utils.dart';
 import 'package:provider/provider.dart';
 
 class AddPostScreen extends StatefulWidget {
-  const AddPostScreen({Key? key}) : super(key: key);
+  const AddPostScreen({super.key});
 
   @override
   _AddPostScreenState createState() => _AddPostScreenState();
