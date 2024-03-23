@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     // Wrap MaterialApp with ChangeNotifierProvider
     return ChangeNotifierProvider(
-      create: (context) => UserProvider(), // Instantiate your UserProvider
+      create: (context) => UserProvider(),
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(

@@ -1,9 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobileapp/SocialMedia/create_post.dart';
 import 'package:mobileapp/SocialMedia/feed.dart';
+import 'package:mobileapp/SocialMedia/profile_screen.dart';
+import 'package:mobileapp/SocialMedia/search_screen.dart';
 
 class MobileScreenLayout extends StatefulWidget {
-  const MobileScreenLayout({Key? key}) : super(key: key);
+  const MobileScreenLayout({super.key});
 
   @override
   State<MobileScreenLayout> createState() => _MobileScreenLayoutState();
@@ -52,18 +55,20 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
         physics: const NeverScrollableScrollPhysics(),
         children: [
           FeedScreen(posts: posts),
-          Center(child: Text('Search')),
+          const SearchScreen(),
           AddPostScreen(
             onPostAdded: addNewPost,
           ),
-          Center(child: Text('Notifs')),
-          Center(child: Text('Profile')),
-        ],
+          const Center(child: Text('Notifs')),
+          ProfileScreen(
+            uid: FirebaseAuth.instance.currentUser!.uid,
+          ),
+        ], // Prevents swiping to switch tabs
       ),
       bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
+        type: BottomNavigationBarType.fixed, // Fixed type for more than 3 items
         backgroundColor: Colors.white,
-        selectedItemColor: Colors.red,
+        selectedItemColor: Colors.red, // Change as needed
         unselectedItemColor: Colors.grey,
         items: const [
           BottomNavigationBarItem(

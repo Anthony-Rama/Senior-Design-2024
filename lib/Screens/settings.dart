@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mobileapp/platforms/sidemenu.dart';
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
 }
 
 class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({Key? key}) : super(key: key);
+  const SettingsScreen({super.key});
 
   @override
   _SettingsScreenState createState() => _SettingsScreenState();
@@ -28,7 +28,7 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  TextEditingController _textEditingController = TextEditingController();
+  final TextEditingController _textEditingController = TextEditingController();
 
   @override
   void dispose() {
@@ -84,7 +84,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   builder: (BuildContext context) {
                     return AlertDialog(
                       //title : const Text('Change Email'),
-                      content: Column(
+                      content: const Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
@@ -106,12 +106,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   },
                 );
               },
-              child: Padding(
+              child: const Padding(
                 padding:
-                    const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
+                    EdgeInsets.symmetric(vertical: 8, horizontal: 20),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: const [
+                  children: [
                     Text(
                       'Change Email',
                       style: TextStyle(
@@ -135,7 +135,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   builder: (BuildContext context) {
                     return AlertDialog(
                       //title : const Text('Change Email'),
-                      content: Column(
+                      content: const Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
@@ -157,12 +157,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   },
                 );
               },
-              child: Padding(
+              child: const Padding(
                 padding:
-                    const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
+                    EdgeInsets.symmetric(vertical: 8, horizontal: 20),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: const [
+                  children: [
                     Text(
                       'Change Password',
                       style: TextStyle(
