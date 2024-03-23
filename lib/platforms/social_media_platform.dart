@@ -63,12 +63,12 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
           ProfileScreen(
             uid: FirebaseAuth.instance.currentUser!.uid,
           ),
-        ], // Prevents swiping to switch tabs
+        ],
       ),
       bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed, // Fixed type for more than 3 items
+        type: BottomNavigationBarType.fixed,
         backgroundColor: Colors.white,
-        selectedItemColor: Colors.red, // Change as needed
+        selectedItemColor: Colors.red,
         unselectedItemColor: Colors.grey,
         items: const [
           BottomNavigationBarItem(

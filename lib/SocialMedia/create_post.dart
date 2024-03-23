@@ -118,7 +118,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
     if (pickedFile != null) {
       setState(() {
         _image = pickedFile;
-        _video = null; // Reset video if image is selected
+        _video = null;
         _videoController?.pause();
         _videoController = null;
       });
@@ -134,7 +134,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
       try {
         setState(() {
           _video = pickedFile;
-          _image = null; // Reset image if video is selected
+          _image = null;
           _videoController = VideoPlayerController.file(File(_video!.path))
             ..initialize().then((_) {
               setState(() {});
@@ -272,7 +272,6 @@ class _AddPostScreenState extends State<AddPostScreen> {
                         ),
                       );
                     } else {
-                      // User is not signed in
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text('User is not signed in.'),
