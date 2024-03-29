@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:mobileapp/backend_resources/auth_methods.dart';
 import 'package:mobileapp/backend_resources/firestore_methods.dart';
 import 'package:mobileapp/screens/login.dart';
 import 'package:mobileapp/utils/utils.dart';
@@ -9,7 +8,8 @@ import 'package:mobileapp/widgets/follow_button.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String uid;
-  const ProfileScreen({super.key, required this.uid});
+
+  const ProfileScreen({Key? key, required this.uid}) : super(key: key);
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -21,66 +21,82 @@ class _ProfileScreenState extends State<ProfileScreen> {
   int followers = 0;
   int following = 0;
   bool isFollowing = false;
-  bool isLoading = false;
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    getData();
+    fetchUserDataAndPosts();
   }
 
-  getData() async {
-    setState(() {
-      isLoading = true;
-    });
+  void fetchUserDataAndPosts() async {
+    setState(() => isLoading = true);
     try {
       var userSnap = await FirebaseFirestore.instance
           .collection('users')
           .doc(widget.uid)
           .get();
-
       var postSnap = await FirebaseFirestore.instance
           .collection('posts')
-          .where('uid', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+          .where('uid', isEqualTo: widget.uid)
           .get();
 
+      if (userSnap.exists) {
+        userData = userSnap.data()!;
+        followers = List.from(userData['followers'] ?? []).length;
+        following = List.from(userData['following'] ?? []).length;
+        isFollowing = List.from(userData['followers'] ?? [])
+            .contains(FirebaseAuth.instance.currentUser!.uid);
+      }
       postLen = postSnap.docs.length;
-      userData = userSnap.data()!;
-      followers = userSnap.data()!['followers'].length;
-      following = userSnap.data()!['following'].length;
-      isFollowing = userSnap
-          .data()!['followers']
-          .contains(FirebaseAuth.instance.currentUser!.uid);
-    } catch (e) {
-      showSnackBar(context, e.toString());
+    } finally {
+      setState(() => isLoading = false);
     }
-    setState(() {
-      isLoading = false;
-    });
+  }
+
+  void handleFollowUnfollow() async {
+    setState(() => isLoading = true);
+    if (isFollowing) {
+      await FireStoreMethods()
+          .unfollowUser(FirebaseAuth.instance.currentUser!.uid, widget.uid);
+    } else {
+      await FireStoreMethods()
+          .followUser(FirebaseAuth.instance.currentUser!.uid, widget.uid);
+    }
+    fetchUserDataAndPosts(); // Refresh data
   }
 
   @override
   Widget build(BuildContext context) {
     return isLoading
-        ? const Center(child: CircularProgressIndicator())
+        ? Center(child: CircularProgressIndicator())
         : Scaffold(
             appBar: AppBar(
-              backgroundColor: Colors.white,
-              title: Text(userData['username'] ?? ''),
-              centerTitle: true,
+              title: Text(userData['username'] ?? 'Profile'),
+              actions: [
+                if (FirebaseAuth.instance.currentUser!.uid != widget.uid)
+                  FollowButton(
+                    text: isFollowing ? 'Unfollow' : 'Follow',
+                    backgroundColor:
+                        isFollowing ? Colors.grey[200]! : Colors.blue,
+                    textColor: isFollowing ? Colors.black : Colors.white,
+                    borderColor: Colors.grey,
+                    function: handleFollowUnfollow,
+                  ),
+              ],
             ),
             body: ListView(
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(16.0),
                   child: Column(
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          buildStatColumn(postLen, "posts"),
-                          buildStatColumn(followers, "followers"),
-                          buildStatColumn(following, "following"),
+                          buildStatColumn(postLen, 'posts'),
+                          buildStatColumn(followers, 'followers'),
+                          buildStatColumn(following, 'following'),
                         ],
                       ),
                       FirebaseAuth.instance.currentUser!.uid == widget.uid
@@ -90,7 +106,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               textColor: Colors.white,
                               borderColor: Colors.grey,
                               function: () async {
-                                await AuthMethods().signOut();
+                                await FirebaseAuth.instance.signOut();
                                 Navigator.of(context).pushReplacement(
                                     MaterialPageRoute(
                                         builder: (context) =>
@@ -104,9 +120,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   textColor: Colors.black,
                                   borderColor: Colors.grey,
                                   function: () async {
-                                    await FireStoreMethods().followUser(
+                                    await FireStoreMethods().unfollowUser(
                                         FirebaseAuth.instance.currentUser!.uid,
-                                        userData['uid']);
+                                        widget.uid);
                                     setState(() {
                                       isFollowing = false;
                                       followers--;
@@ -121,7 +137,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   function: () async {
                                     await FireStoreMethods().followUser(
                                         FirebaseAuth.instance.currentUser!.uid,
-                                        userData['uid']);
+                                        widget.uid);
                                     setState(() {
                                       isFollowing = true;
                                       followers++;
@@ -138,18 +154,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       .where('uid', isEqualTo: widget.uid)
                       .get(),
                   builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
+                    if (!snapshot.hasData) {
                       return const Center(child: CircularProgressIndicator());
                     }
                     return GridView.builder(
                       shrinkWrap: true,
+                      physics:
+                          const NeverScrollableScrollPhysics(), // to disable GridView's scrolling
                       itemCount: (snapshot.data! as dynamic).docs.length,
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 3,
-                        crossAxisSpacing: 5,
-                        mainAxisSpacing: 1.5,
-                        childAspectRatio: 1,
+                        crossAxisSpacing: 2,
+                        mainAxisSpacing: 2,
                       ),
                       itemBuilder: (context, index) {
                         DocumentSnapshot snap =
@@ -170,22 +187,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(
-          num.toString(),
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        Text(num.toString(),
+            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
         const SizedBox(height: 4),
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w400,
-            color: Colors.grey,
-          ),
-        ),
+        Text(label,
+            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w400)),
       ],
     );
   }
