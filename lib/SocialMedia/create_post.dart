@@ -8,31 +8,50 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class Post {
+  final String id;
   final String userName;
   final String userId;
   final String timestamp;
   final String? imageUrl;
   final String? videoUrl;
   final String caption;
+  int likes;
 
   Post({
+    required this.id,
     required this.userName,
     required this.userId,
     required this.timestamp,
     this.imageUrl,
     this.videoUrl,
     required this.caption,
+    this.likes = 0,
   });
 
   factory Post.fromFirestore(Map<String, dynamic> firestore, String id) {
     return Post(
+      id: id,
       userName: firestore['userName'] ?? 'Unknown User',
       userId: firestore['userId'] ?? '',
       timestamp: firestore['timestamp'] ?? DateTime.now().toString(),
       imageUrl: firestore['imageUrl'],
       videoUrl: firestore['videoUrl'],
       caption: firestore['caption'] ?? '',
+      likes: firestore['likes'] ?? 0,
     );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'userName': userName,
+      'userId': userId,
+      'timestamp': timestamp,
+      'imageUrl': imageUrl,
+      'videoUrl': videoUrl,
+      'caption': caption,
+      'likes': likes,
+    };
   }
 }
 
@@ -75,13 +94,7 @@ class FirestoreService {
 
   Future<void> addPost(Post post) async {
     try {
-      await _db.collection('posts').add({
-        'userId': post.userId,
-        'timestamp': post.timestamp,
-        'imageUrl': post.imageUrl,
-        'videoUrl': post.videoUrl,
-        'caption': post.caption,
-      });
+      await _db.collection('posts').add(post.toMap());
     } catch (e) {
       print('Error adding post to Firestore: $e');
     }
@@ -254,6 +267,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
                     final user = FirebaseAuth.instance.currentUser;
                     if (user != null) {
                       final post = Post(
+                        id: '',
                         userName: user.displayName ?? 'Unknown User',
                         userId: user.uid,
                         timestamp: DateTime.now().toString(),
