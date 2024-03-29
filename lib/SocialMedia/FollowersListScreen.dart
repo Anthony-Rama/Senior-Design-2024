@@ -3,13 +3,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class FollowersList extends StatelessWidget {
   final String uid;
-  const FollowersList({Key? key, required this.uid}) : super(key: key);
+  const FollowersList({super.key, required this.uid});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Followers'),
+        title: const Text('Followers'),
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
@@ -18,7 +18,7 @@ class FollowersList extends StatelessWidget {
             .collection('followers')
             .snapshots(),
         builder: (context, snapshot) {
-          if (!snapshot.hasData) return CircularProgressIndicator();
+          if (!snapshot.hasData) return const CircularProgressIndicator();
           var followers = snapshot.data!.docs;
           return ListView.builder(
             itemCount: followers.length,

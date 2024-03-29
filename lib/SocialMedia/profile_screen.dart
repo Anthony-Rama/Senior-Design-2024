@@ -5,13 +5,12 @@ import 'package:mobileapp/Screens/settings.dart';
 import 'package:mobileapp/SocialMedia/FollowersListScreen.dart';
 import 'package:mobileapp/SocialMedia/FollowingListScreen.dart';
 import 'package:mobileapp/backend_resources/firestore_methods.dart';
-import 'package:mobileapp/Screens/settings.dart'; // Create this
-import 'package:mobileapp/utils/utils.dart';
+// Create this
 import 'package:mobileapp/widgets/follow_button.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String uid;
-  const ProfileScreen({Key? key, required this.uid}) : super(key: key);
+  const ProfileScreen({super.key, required this.uid});
 
   @override
   _ProfileScreenState createState() => _ProfileScreenState();

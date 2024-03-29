@@ -4,13 +4,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class FollowingList extends StatelessWidget {
   final String uid;
 
-  const FollowingList({Key? key, required this.uid}) : super(key: key);
+  const FollowingList({super.key, required this.uid});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Following'),
+        title: const Text('Following'),
         backgroundColor: Colors.blue,
       ),
       body: StreamBuilder<DocumentSnapshot>(
@@ -18,18 +18,18 @@ class FollowingList extends StatelessWidget {
             FirebaseFirestore.instance.collection('users').doc(uid).snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
 
           if (!snapshot.hasData) {
-            return Center(child: Text("No data available"));
+            return const Center(child: Text("No data available"));
           }
 
           DocumentSnapshot userDoc = snapshot.data!;
           List<dynamic> followingIds = userDoc['following'];
 
           if (followingIds.isEmpty) {
-            return Center(child: Text("You're not following anyone yet."));
+            return const Center(child: Text("You're not following anyone yet."));
           }
 
           return ListView.builder(
@@ -42,7 +42,7 @@ class FollowingList extends StatelessWidget {
                     .get(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
-                    return ListTile(
+                    return const ListTile(
                       leading: CircleAvatar(),
                       title: Text("Loading..."),
                     );
@@ -50,7 +50,7 @@ class FollowingList extends StatelessWidget {
 
                   DocumentSnapshot followingUserDoc = snapshot.data!;
                   return ListTile(
-                    leading: CircleAvatar(
+                    leading: const CircleAvatar(
                         // If you have a profile image URL, you can use NetworkImage
                         // backgroundImage: NetworkImage(
                         // followingUserDoc['profileImageUrl'] ?? ''),
