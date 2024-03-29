@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+//import 'package:mobileapp/Screens/addpfp.dart';
 import 'package:mobileapp/Screens/login.dart';
-//import 'package:mobileapp/SocialMedia/feed.dart';
 
 class VerifyEmailScreen extends StatefulWidget {
   const VerifyEmailScreen({super.key});
@@ -79,7 +79,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
     if (user.emailVerified) {
       timer.cancel();
       Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const LoginScreen()));
+          MaterialPageRoute(builder: (context) => LoginScreen()));
     }
   }
 }

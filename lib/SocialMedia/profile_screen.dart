@@ -1,6 +1,8 @@
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+// ignore: unused_import
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -19,44 +21,8 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  // ignore: unused_field
-  Uint8List? _image;
-  String? _profilePicURL;
   
-  @override
-  void initState() {
-    super.initState();
-    getData();
-  }
-
-  void selectImage() async {
-    Uint8List img = await pickImage(ImageSource.gallery);
-    String uid = FirebaseAuth.instance.currentUser!.uid;
-    String fileName = '$uid/${DateTime.now().millisecondsSinceEpoch}.jpg';
-
-    try {
-      await FirebaseStorage.instance.ref(fileName).putData(img);
-
-      String downloadURL =
-          await FirebaseStorage.instance.ref(fileName).getDownloadURL();
-
-      await FirebaseFirestore.instance.collection('users').doc(uid).update({
-        'profilePic': downloadURL,
-      });
-
-      //User? user = FirebaseAuth.instance.currentUser;
-      // ignore: deprecated_member_use
-      //user?.updateProfile(photoURL: downloadURL);
-
-      setState(() {
-        _image = img;
-        _profilePicURL = downloadURL;
-      });
-    } catch (e) {
-      print('Error uploading image: $e');
-    }
-  }
-
+ 
   var userData = {};
   int postLen = 0;
   int followers = 0;
@@ -64,16 +30,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool isFollowing = false;
   bool isLoading = false;
 
-  /*@override
+  @override
   void initState() {
     super.initState();
     getData();
-  }*/
+  }
 
   Future<void> getData() async {
     setState(() {
-      //isLoading = true;
-      _profilePicURL = FirebaseAuth.instance.currentUser?.photoURL;
+      isLoading = true;
     });
     try {
       var userSnap = await FirebaseFirestore.instance
@@ -94,18 +59,46 @@ class _ProfileScreenState extends State<ProfileScreen> {
           .data()!['followers']
           .contains(FirebaseAuth.instance.currentUser!.uid);
       
-      isLoading = false;
-      _profilePicURL = userData['profilePic'];
-      //_currentUsername = FirebaseAuth.instance.currentUser!.displayName;
-      // User? user = FirebaseAuth.instance.currentUser;
-      //String? profilePicURL = user?.photoURL;
     } catch (e) {
       showSnackBar(context, e.toString());
     }
-    //setState(() {
-    // isLoading = false;
-    //_profilePicURL = userSnap.data()?['profilePic'];
-    //});
+    setState(() {
+     isLoading = false;
+    });
+  }
+
+  Future<void> changeImage() async {
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      File image = File(pickedFile.path);
+      try {
+        final Reference storageRef = FirebaseStorage.instance
+            .ref()
+            .child('profile_pictures/${FirebaseAuth.instance.currentUser!.uid}');
+        await storageRef.putFile(image);
+        final String imageURL = await storageRef.getDownloadURL();
+
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .update({'profilePic': imageURL});
+
+        setState(() {
+          userData['profilePic'] = imageURL;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Profile picture updated successfully!'),
+          backgroundColor: Colors.green,
+        ));
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Failed to update profile picture. Please try again.'),
+          backgroundColor: Colors.red,
+        ));
+      }
+    }
   }
 
   @override
@@ -124,24 +117,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     children: [
-                      _profilePicURL != null
-                          ? CircleAvatar(
+                     CircleAvatar(
                               radius: 65,
-                              backgroundImage: NetworkImage(_profilePicURL!))
-                          : CircleAvatar(
-                              radius: 65,
-                              backgroundImage: NetworkImage(
-                                  'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/1024px-Default_pfp.svg.png'),
-                            ),
+                              backgroundImage: NetworkImage(userData['profilePic']),),
+                         
+                            
                       Positioned(
                         child: IconButton(
-                          icon: Icon(Icons.add_a_photo),
-                          onPressed: selectImage,
+                          icon: const Icon(Icons.add_a_photo),
+                          onPressed: changeImage,
                         ),
                         // bottom: -10,
                         // left: 80,
                       ),
-                      SizedBox(height: 15),
+                      const SizedBox(height: 15),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
@@ -153,7 +142,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       FirebaseAuth.instance.currentUser!.uid == widget.uid
                           ? FollowButton(
                               text: 'Sign Out',
-                              backgroundColor: Color.fromARGB(255, 239, 83, 80),
+                              backgroundColor: const Color.fromARGB(255, 239, 83, 80),
                               textColor: Colors.white,
                               borderColor: Colors.grey,
                               function: () async {
@@ -182,9 +171,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 )
                               : FollowButton(
                                   text: 'Follow',
-                                  backgroundColor: Colors.blue,
+                                  backgroundColor: const Color.fromARGB(255, 239, 83, 80),
                                   textColor: Colors.white,
-                                  borderColor: Colors.blue,
+                                  borderColor: const Color.fromARGB(255, 239, 83, 80),
                                   function: () async {
                                     await FireStoreMethods().followUser(
                                         FirebaseAuth.instance.currentUser!.uid,
