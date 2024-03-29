@@ -91,7 +91,7 @@ class FirestoreService {
 class AddPostScreen extends StatefulWidget {
   final Function(Post) onPostAdded;
 
-  const AddPostScreen({Key? key, required this.onPostAdded}) : super(key: key);
+  const AddPostScreen({super.key, required this.onPostAdded});
 
   @override
   _AddPostScreenState createState() => _AddPostScreenState();
@@ -166,30 +166,30 @@ class _AddPostScreenState extends State<AddPostScreen> {
               if (_image == null && _video == null) ...[
                 ElevatedButton(
                   onPressed: getImage,
-                  child: const Text('PICK IMAGE'),
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.red[400],
-                    onPrimary: Colors.white,
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.red[400],
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30.0),
                       side: BorderSide(color: Colors.red[400]!),
                     ),
                   ),
+                  child: const Text('PICK IMAGE'),
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: getVideo,
-                  child: const Text('PICK VIDEO'),
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.red[400],
-                    onPrimary: Colors.white,
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.red[400],
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30.0),
                       side: BorderSide(color: Colors.red[400]!),
                     ),
                   ),
+                  child: const Text('PICK VIDEO'),
                 ),
               ],
               if (_image != null)
@@ -268,7 +268,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => FeedScreen(posts: []),
+                          builder: (context) => const FeedScreen(posts: []),
                         ),
                       );
                     } else {
@@ -286,25 +286,25 @@ class _AddPostScreenState extends State<AddPostScreen> {
                     );
                   }
                 },
-                child: _isUploading
-                    ? Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          CircularProgressIndicator(),
-                          SizedBox(width: 10),
-                          Text('Uploading...'),
-                        ],
-                      )
-                    : const Text('SUBMIT POST'),
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.red[400],
-                  onPrimary: Colors.white,
+                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.red[400],
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30.0),
                     side: BorderSide(color: Colors.red[400]!),
                   ),
                 ),
+                child: _isUploading
+                    ? const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CircularProgressIndicator(),
+                          SizedBox(width: 10),
+                          Text('Uploading...'),
+                        ],
+                      )
+                    : const Text('SUBMIT POST'),
               ),
             ],
           ),
