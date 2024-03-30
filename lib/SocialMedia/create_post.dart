@@ -290,16 +290,15 @@ class _AddPostScreenState extends State<AddPostScreen> {
                           videoUrl: videoUrl,
                         );
 
-                        await FirestoreService().addPost(post);
-                        widget.onPostAdded(post);
+                      await FirestoreService().addPost(post);
+                      widget.onPostAdded(post);
 
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const FeedScreen(posts: []),
-                          ),
-                        );
-                      }
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const FeedScreen(posts: []),
+                        ),
+                      );
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
