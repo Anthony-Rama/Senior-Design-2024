@@ -124,4 +124,20 @@ class FireStoreMethods {
       if (kDebugMode) print(e.toString());
     }
   }
+
+  Future<void> unfollowUser(String uid, String followId) async {
+    try {
+      // Remove 'uid' from 'followId's followers list
+      await _firestore.collection('users').doc(followId).update({
+        'followers': FieldValue.arrayRemove([uid])
+      });
+
+      // Remove 'followId' from 'uid's following list
+      await _firestore.collection('users').doc(uid).update({
+        'following': FieldValue.arrayRemove([followId])
+      });
+    } catch (e) {
+      if (kDebugMode) print(e.toString());
+    }
+  }
 }

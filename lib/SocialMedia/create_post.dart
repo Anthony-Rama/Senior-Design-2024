@@ -167,7 +167,8 @@ class _AddPostScreenState extends State<AddPostScreen> {
                 ElevatedButton(
                   onPressed: getImage,
                   style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white, backgroundColor: Colors.red[400],
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.red[400],
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30.0),
@@ -180,7 +181,8 @@ class _AddPostScreenState extends State<AddPostScreen> {
                 ElevatedButton(
                   onPressed: getVideo,
                   style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white, backgroundColor: Colors.red[400],
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.red[400],
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30.0),
@@ -285,7 +287,8 @@ class _AddPostScreenState extends State<AddPostScreen> {
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white, backgroundColor: Colors.red[400],
+                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.red[400],
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30.0),
