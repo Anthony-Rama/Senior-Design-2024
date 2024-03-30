@@ -157,8 +157,7 @@ class _AddCommentScreenState extends State<AddCommentScreen> {
             ElevatedButton(
               onPressed: _submitComment,
               style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white,
-                backgroundColor: Colors.red[400],
+                foregroundColor: Colors.white, backgroundColor: Colors.red[400],
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30.0),
