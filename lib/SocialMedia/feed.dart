@@ -26,7 +26,7 @@ class FirestoreService {
       return userDoc;
     } catch (e) {
       print('Error getting user: $e');
-      throw e;
+      rethrow;
     }
   }
 
@@ -54,12 +54,12 @@ class FirestoreService {
 }
 
 class FeedScreen extends StatelessWidget {
-  const FeedScreen({Key? key, required List<Post> posts}) : super(key: key);
+  const FeedScreen({super.key, required List<Post> posts});
 
   @override
   Widget build(BuildContext context) {
     final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-    final Map<String, dynamic> _userDataCache = {};
+    final Map<String, dynamic> userDataCache = {};
 
     return Scaffold(
       key: scaffoldKey,
@@ -78,22 +78,22 @@ class FeedScreen extends StatelessWidget {
         future: FirestoreService().getPosts(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else {
             List<Post>? posts = snapshot.data;
 
             if (posts == null || posts.isEmpty) {
-              return Center(child: Text('No posts available'));
+              return const Center(child: Text('No posts available'));
             }
 
             return ListView.separated(
               itemCount: posts.length,
-              separatorBuilder: (context, index) => SizedBox(height: 5.0),
+              separatorBuilder: (context, index) => const SizedBox(height: 5.0),
               itemBuilder: (context, index) {
                 final post = posts[index];
-                return _buildPostItem(context, post, _userDataCache);
+                return _buildPostItem(context, post, userDataCache);
               },
             );
           }
@@ -115,7 +115,7 @@ class FeedScreen extends StatelessWidget {
               future: FirestoreService().getUser(post.userId),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Text('Loading...');
+                  return const Text('Loading...');
                 } else if (snapshot.hasError) {
                   return Text('Error loading user: ${snapshot.error}');
                 } else {
@@ -125,14 +125,14 @@ class FeedScreen extends StatelessWidget {
 
                   return Row(
                     children: [
-                      CircleAvatar(
+                      const CircleAvatar(
                         radius: 20,
                         // pfp
                       ),
                       const SizedBox(width: 8),
                       Text(
                         username,
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 16),
                       ),
                       const Spacer(),
@@ -165,7 +165,7 @@ class FeedScreen extends StatelessWidget {
               future: FirestoreService().getUser(post.userId),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Text('Loading...');
+                  return const Text('Loading...');
                 } else if (snapshot.hasError) {
                   return Text('Error loading user: ${snapshot.error}');
                 } else {
@@ -176,20 +176,20 @@ class FeedScreen extends StatelessWidget {
                   if (post.imageUrl == null && post.videoUrl == null) {
                     return Text(
                       post.caption,
-                      style: TextStyle(fontSize: 16),
+                      style: const TextStyle(fontSize: 16),
                     );
                   } else {
                     return RichText(
                       text: TextSpan(
-                        style: TextStyle(fontSize: 16, color: Colors.black),
+                        style: const TextStyle(fontSize: 16, color: Colors.black),
                         children: [
                           TextSpan(
                             text: '$username ',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                           TextSpan(
                             text: post.caption,
-                            style: TextStyle(fontWeight: FontWeight.normal),
+                            style: const TextStyle(fontWeight: FontWeight.normal),
                           ),
                         ],
                       ),
@@ -203,14 +203,14 @@ class FeedScreen extends StatelessWidget {
           Row(
             children: [
               IconButton(
-                icon: Icon(Icons.favorite_border),
+                icon: const Icon(Icons.favorite_border),
                 onPressed: () {
                   _likePost(post);
                 },
               ),
               const SizedBox(width: 8),
               IconButton(
-                icon: Icon(Icons.comment),
+                icon: const Icon(Icons.comment),
                 onPressed: () {
                   // Navigate to AddCommentScreen when comment icon is tapped
                   Navigator.push(
@@ -228,7 +228,7 @@ class FeedScreen extends StatelessWidget {
             padding: const EdgeInsets.only(left: 16.0),
             child: Text(
               '${post.likes} likes',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
           ),
           const SizedBox(height: 8),
@@ -279,7 +279,7 @@ class FeedScreen extends StatelessWidget {
 
       final formattedDate =
           '${dateTime.day}/${dateTime.month}/${dateTime.year}';
-      return '$formattedDate';
+      return formattedDate;
     } catch (e) {
       print('Error formatting timestamp: $e');
       return 'Unknown Time';
@@ -291,21 +291,21 @@ class FeedScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Delete Post'),
-        content: Text('Are you sure you want to delete this post?'),
+        title: const Text('Delete Post'),
+        content: const Text('Are you sure you want to delete this post?'),
         actions: [
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
             },
-            child: Text('Cancel'),
+            child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () {
               _deletePost(post.id);
               Navigator.of(context).pop();
             },
-            child: Text(
+            child: const Text(
               'Delete',
               style: TextStyle(color: Colors.red),
             ),
@@ -323,8 +323,7 @@ class FeedScreen extends StatelessWidget {
 class _VideoPlayerWidget extends StatefulWidget {
   final String videoUrl;
 
-  const _VideoPlayerWidget({required this.videoUrl, Key? key})
-      : super(key: key);
+  const _VideoPlayerWidget({required this.videoUrl});
 
   @override
   _VideoPlayerWidgetState createState() => _VideoPlayerWidgetState();
@@ -364,7 +363,7 @@ class _VideoPlayerWidgetState extends State<_VideoPlayerWidget> {
             ],
           );
         } else {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         }
       },
     );
@@ -383,23 +382,23 @@ class _VideoPlayerControls extends StatelessWidget {
         VideoProgressIndicator(
           controller,
           allowScrubbing: true,
-          colors: VideoProgressColors(
+          colors: const VideoProgressColors(
             playedColor: Colors.red,
             bufferedColor: Colors.grey,
             backgroundColor: Colors.black,
           ),
         ),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         SizedBox(
           height: 40,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               IconButton(
-                icon: Icon(Icons.replay_5),
+                icon: const Icon(Icons.replay_5),
                 onPressed: () {
                   controller
-                      .seekTo(controller.value.position - Duration(seconds: 5));
+                      .seekTo(controller.value.position - const Duration(seconds: 5));
                 },
               ),
               IconButton(
@@ -415,10 +414,10 @@ class _VideoPlayerControls extends StatelessWidget {
                 },
               ),
               IconButton(
-                icon: Icon(Icons.forward_5),
+                icon: const Icon(Icons.forward_5),
                 onPressed: () {
                   controller
-                      .seekTo(controller.value.position + Duration(seconds: 5));
+                      .seekTo(controller.value.position + const Duration(seconds: 5));
                 },
               ),
               IconButton(
@@ -444,7 +443,7 @@ class VideoPlayerButton extends StatelessWidget {
   final VoidCallback onPressed;
   final IconData icon;
 
-  const VideoPlayerButton({
+  const VideoPlayerButton({super.key, 
     required this.onPressed,
     required this.icon,
   });

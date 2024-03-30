@@ -37,7 +37,7 @@ class Comment {
 class AddCommentScreen extends StatefulWidget {
   final String postId;
 
-  const AddCommentScreen({Key? key, required this.postId}) : super(key: key);
+  const AddCommentScreen({super.key, required this.postId});
 
   @override
   _AddCommentScreenState createState() => _AddCommentScreenState();
@@ -149,23 +149,22 @@ class _AddCommentScreenState extends State<AddCommentScreen> {
             ),
             TextField(
               controller: commentController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 hintText: 'Write a comment...',
               ),
             ),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _submitComment,
-              child: const Text('SUBMIT COMMENT'),
               style: ElevatedButton.styleFrom(
-                primary: Colors.red[400],
-                onPrimary: Colors.white,
+                foregroundColor: Colors.white, backgroundColor: Colors.red[400],
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30.0),
                   side: BorderSide(color: Colors.red[400]!),
                 ),
               ),
+              child: const Text('SUBMIT COMMENT'),
             ),
           ],
         ),
