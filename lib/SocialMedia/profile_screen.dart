@@ -1,6 +1,12 @@
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+// ignore: unused_import
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:mobileapp/backend_resources/auth_methods.dart';
 import 'package:mobileapp/Screens/settings.dart';
 import 'package:mobileapp/SocialMedia/FollowersListScreen.dart';
 import 'package:mobileapp/SocialMedia/FollowingListScreen.dart';
@@ -17,6 +23,8 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  
+ 
   var userData = {};
   int postLen = 0;
   int followers = 0;
@@ -29,6 +37,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.initState();
     fetchUserDataAndPosts();
   }
+
 
   void fetchUserDataAndPosts() async {
     setState(() => isLoading = true);
@@ -67,6 +76,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
     fetchUserDataAndPosts(); // Refresh data
   }
 
+  Future<void> changeImage() async {
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      File image = File(pickedFile.path);
+      try {
+        final Reference storageRef = FirebaseStorage.instance
+            .ref()
+            .child('profile_pictures/${FirebaseAuth.instance.currentUser!.uid}');
+        await storageRef.putFile(image);
+        final String imageURL = await storageRef.getDownloadURL();
+
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .update({'profilePic': imageURL});
+
+        setState(() {
+          userData['profilePic'] = imageURL;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Profile picture updated successfully!'),
+          backgroundColor: Colors.green,
+        ));
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Failed to update profile picture. Please try again.'),
+          backgroundColor: Colors.red,
+        ));
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final bool isOwnProfile =
@@ -85,6 +128,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     children: [
+                     CircleAvatar(
+                              radius: 65,
+                              backgroundImage: NetworkImage(userData['profilePic']),),
+                         
+                            
+                      Positioned(
+                        child: IconButton(
+                          icon: const Icon(Icons.add_a_photo),
+                          onPressed: changeImage,
+                        ),
+                        // bottom: -10,
+                        // left: 80,
+                      ),
+                      const SizedBox(height: 15),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
@@ -107,6 +164,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       isOwnProfile
                           ? FollowButton(
+
                               text: 'Edit Profile',
                               backgroundColor: Colors.grey[200]!,
                               textColor: Colors.black,

@@ -57,6 +57,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         ),
                       ),
                       child: ListTile(
+                        leading: CircleAvatar(radius:20, backgroundImage: NetworkImage( doc.get('profilePic')),),
                         title: Text(doc.get('username')),
                       ),
                     );
