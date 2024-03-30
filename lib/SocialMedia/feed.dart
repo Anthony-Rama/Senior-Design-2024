@@ -1,11 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:mobileapp/SocialMedia/create_post.dart';
+import 'package:mobileapp/SocialMedia/comments.dart';
 import 'package:mobileapp/platforms/sidemenu.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class FirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
+
+  Future<void> updatePostLikes(String postId, int likes) async {
+    try {
+      await _db.collection('posts').doc(postId).update({
+        'likes': likes,
+      });
+    } catch (e) {
+      print('Error updating post likes: $e');
+    }
+  }
 
   Future<DocumentSnapshot> getUser(String userId) async {
     try {
@@ -30,6 +41,14 @@ class FirestoreService {
     } catch (e) {
       print('Error fetching posts: $e');
       return [];
+    }
+  }
+
+  Future<void> deletePost(String postId) async {
+    try {
+      await _db.collection('posts').doc(postId).delete();
+    } catch (e) {
+      print('Error deleting post from Firestore: $e');
     }
   }
 }
@@ -69,8 +88,9 @@ class FeedScreen extends StatelessWidget {
               return const Center(child: Text('No posts available'));
             }
 
-            return ListView.builder(
+            return ListView.separated(
               itemCount: posts.length,
+              separatorBuilder: (context, index) => const SizedBox(height: 5.0),
               itemBuilder: (context, index) {
                 final post = posts[index];
                 return _buildPostItem(context, post, userDataCache);
@@ -84,99 +104,170 @@ class FeedScreen extends StatelessWidget {
 
   Widget _buildPostItem(
       BuildContext context, Post post, Map<String, dynamic> userDataCache) {
-    return Card(
-      elevation: 3,
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            FutureBuilder<DocumentSnapshot>(
+    return Container(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: FutureBuilder<DocumentSnapshot>(
               future: FirestoreService().getUser(post.userId),
-              builder: (context, userSnapshot) {
-                if (userSnapshot.connectionState == ConnectionState.waiting) {
-                  return const SizedBox(
-                    width: double.infinity,
-                    child: LinearProgressIndicator(),
-                  );
-                } else if (userSnapshot.hasError) {
-                  return Text('Error loading user: ${userSnapshot.error}');
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Text('Loading...');
+                } else if (snapshot.hasError) {
+                  return Text('Error loading user: ${snapshot.error}');
                 } else {
-                  final userData = userSnapshot.data!;
-                  final userName = userData['username'] ?? 'Unknown User';
+                  final userData =
+                      snapshot.data!.data() as Map<String, dynamic>;
+                  final username = userData['username'];
 
                   return Row(
                     children: [
+                      const CircleAvatar(
+                        radius: 20,
+                        // pfp
+                      ),
+                      const SizedBox(width: 8),
                       Text(
-                        '$userName',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.red[400],
-                          fontWeight: FontWeight.bold,
-                        ),
+                        username,
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                      const Spacer(),
+                      IconButton(
+                        icon: const Icon(Icons.more_vert),
+                        onPressed: () {
+                          _showDeleteConfirmationDialog(context, post);
+                        },
                       ),
                     ],
                   );
                 }
               },
             ),
-            const SizedBox(height: 8),
-            if (post.imageUrl != null)
-              Image.network(
-                post.imageUrl!,
-                height: 200,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ),
-            if (post.videoUrl != null)
-              _VideoPlayerWidget(videoUrl: post.videoUrl!),
-            const SizedBox(height: 8),
-            Text(
-              post.caption,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          if (post.imageUrl != null)
+            Image.network(
+              post.imageUrl!,
+              height: 300,
+              width: double.infinity,
+              fit: BoxFit.cover,
             ),
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
+          if (post.videoUrl != null)
+            _VideoPlayerWidget(videoUrl: post.videoUrl!),
+          const SizedBox(height: 8),
+          //caption
+          Padding(
+            padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+            child: FutureBuilder<DocumentSnapshot>(
+              future: FirestoreService().getUser(post.userId),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Text('Loading...');
+                } else if (snapshot.hasError) {
+                  return Text('Error loading user: ${snapshot.error}');
+                } else {
+                  final userData =
+                      snapshot.data!.data() as Map<String, dynamic>;
+                  final username = userData['username'];
+
+                  if (post.imageUrl == null && post.videoUrl == null) {
+                    return Text(
+                      post.caption,
+                      style: const TextStyle(fontSize: 16),
+                    );
+                  } else {
+                    return RichText(
+                      text: TextSpan(
+                        style:
+                            const TextStyle(fontSize: 16, color: Colors.black),
+                        children: [
+                          TextSpan(
+                            text: '$username ',
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          TextSpan(
+                            text: post.caption,
+                            style:
+                                const TextStyle(fontWeight: FontWeight.normal),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                }
+              },
+            ),
+          ),
+          // likes and comments
+          Row(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.favorite_border),
+                onPressed: () {
+                  _likePost(post);
+                },
+              ),
+              const SizedBox(width: 8),
+              IconButton(
+                icon: const Icon(Icons.comment),
+                onPressed: () {
+                  // Navigate to AddCommentScreen when comment icon is tapped
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AddCommentScreen(postId: post.id),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+          // likes count
+          Padding(
+            padding: const EdgeInsets.only(left: 16.0),
+            child: Text(
+              '${post.likes} likes',
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+          ),
+          const SizedBox(height: 8),
+          // comments section
+          const Padding(
+            padding: EdgeInsets.only(left: 16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.favorite_border, color: Colors.red[400]),
-                      onPressed: () {
-                        // Implement like functionality
-                      },
-                    ),
-                    const SizedBox(width: 8),
-                  ],
+                Text(
+                  'Comments',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
-                Row(
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.comment, color: Colors.red[400]),
-                      onPressed: () {
-                        // Implement comment functionality
-                      },
-                    ),
-                    const SizedBox(width: 8),
-                  ],
-                ),
+                SizedBox(height: 8),
+                // display comment count
               ],
             ),
-            const SizedBox(height: 8),
-            _buildTimestamp(post.timestamp),
-          ],
-        ),
+          ),
+          _buildTimestamp(post.timestamp),
+        ],
       ),
     );
   }
 
+  void _likePost(Post post) {
+    post.likes++;
+    FirestoreService().updatePostLikes(post.id, post.likes);
+  }
+
   Widget _buildTimestamp(String? timestamp) {
     final formattedTimestamp = _formatTimestamp(timestamp);
-    return Text(
-      formattedTimestamp,
-      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
+    return Padding(
+      padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 8.0),
+      child: Text(
+        formattedTimestamp,
+        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
+      ),
     );
   }
 
@@ -188,14 +279,46 @@ class FeedScreen extends StatelessWidget {
     try {
       final dateTime = DateTime.parse(timestamp);
 
-      final formattedTime = '${dateTime.hour}:${dateTime.minute}';
       final formattedDate =
           '${dateTime.day}/${dateTime.month}/${dateTime.year}';
-      return '$formattedTime, $formattedDate';
+      return formattedDate;
     } catch (e) {
       print('Error formatting timestamp: $e');
       return 'Unknown Time';
     }
+  }
+
+  Future<void> _showDeleteConfirmationDialog(
+      BuildContext context, Post post) async {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Post'),
+        content: const Text('Are you sure you want to delete this post?'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              _deletePost(post.id);
+              Navigator.of(context).pop();
+            },
+            child: const Text(
+              'Delete',
+              style: TextStyle(color: Colors.red),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _deletePost(String postId) {
+    FirestoreService().deletePost(postId);
   }
 }
 
@@ -276,8 +399,8 @@ class _VideoPlayerControls extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.replay_5),
                 onPressed: () {
-                  controller
-                      .seekTo(controller.value.position - const Duration(seconds: 5));
+                  controller.seekTo(
+                      controller.value.position - const Duration(seconds: 5));
                 },
               ),
               IconButton(
@@ -295,8 +418,8 @@ class _VideoPlayerControls extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.forward_5),
                 onPressed: () {
-                  controller
-                      .seekTo(controller.value.position + const Duration(seconds: 5));
+                  controller.seekTo(
+                      controller.value.position + const Duration(seconds: 5));
                 },
               ),
               IconButton(
@@ -322,7 +445,8 @@ class VideoPlayerButton extends StatelessWidget {
   final VoidCallback onPressed;
   final IconData icon;
 
-  const VideoPlayerButton({super.key, 
+  const VideoPlayerButton({
+    super.key,
     required this.onPressed,
     required this.icon,
   });
