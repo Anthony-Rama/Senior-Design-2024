@@ -23,8 +23,6 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  
- 
   var userData = {};
   int postLen = 0;
   int followers = 0;
@@ -37,7 +35,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.initState();
     fetchUserDataAndPosts();
   }
-
 
   void fetchUserDataAndPosts() async {
     setState(() => isLoading = true);
@@ -82,9 +79,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (pickedFile != null) {
       File image = File(pickedFile.path);
       try {
-        final Reference storageRef = FirebaseStorage.instance
-            .ref()
-            .child('profile_pictures/${FirebaseAuth.instance.currentUser!.uid}');
+        final Reference storageRef = FirebaseStorage.instance.ref().child(
+            'profile_pictures/${FirebaseAuth.instance.currentUser!.uid}');
         await storageRef.putFile(image);
         final String imageURL = await storageRef.getDownloadURL();
 
@@ -128,11 +124,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     children: [
-                     CircleAvatar(
-                              radius: 65,
-                              backgroundImage: NetworkImage(userData['profilePic']),),
-                         
-                            
+                      CircleAvatar(
+                        radius: 65,
+                        backgroundImage: NetworkImage(userData['profilePic']),
+                      ),
                       Positioned(
                         child: IconButton(
                           icon: const Icon(Icons.add_a_photo),
@@ -164,7 +159,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       isOwnProfile
                           ? FollowButton(
-
                               text: 'Edit Profile',
                               backgroundColor: Colors.grey[200]!,
                               textColor: Colors.black,

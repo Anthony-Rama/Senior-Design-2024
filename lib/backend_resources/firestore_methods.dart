@@ -97,47 +97,48 @@ class FireStoreMethods {
     return res;
   }
 
-  Future<void> followUser(String uid, String followId) async {
+  Future<void> followUser(String currentUserId, String followUserId) async {
     try {
-      DocumentSnapshot snap =
-          await _firestore.collection('users').doc(uid).get();
-      List following = (snap.data()! as dynamic)['following'];
+      DocumentReference currentUserDocRef =
+          _firestore.collection('users').doc(currentUserId);
+      DocumentReference followUserDocRef =
+          _firestore.collection('users').doc(followUserId);
 
-      if (following.contains(followId)) {
-        await _firestore.collection('users').doc(followId).update({
-          'followers': FieldValue.arrayRemove([uid])
+      // Transaction ensures atomic updates
+      return _firestore.runTransaction((transaction) async {
+        transaction.update(currentUserDocRef, {
+          'following': FieldValue.arrayUnion([followUserId])
         });
-
-        await _firestore.collection('users').doc(uid).update({
-          'following': FieldValue.arrayRemove([followId])
+        transaction.update(followUserDocRef, {
+          'followers': FieldValue.arrayUnion([currentUserId])
         });
-      } else {
-        await _firestore.collection('users').doc(followId).update({
-          'followers': FieldValue.arrayUnion([uid])
-        });
-
-        await _firestore.collection('users').doc(uid).update({
-          'following': FieldValue.arrayUnion([followId])
-        });
-      }
+      });
+    } on FirebaseException catch (e) {
+      debugPrint("FirebaseException during follow: ${e.message}");
     } catch (e) {
-      if (kDebugMode) print(e.toString());
+      debugPrint("Unknown exception during follow: $e");
     }
   }
 
-  Future<void> unfollowUser(String uid, String followId) async {
+  Future<void> unfollowUser(String currentUserId, String unfollowUserId) async {
     try {
-      // Remove 'uid' from 'followId's followers list
-      await _firestore.collection('users').doc(followId).update({
-        'followers': FieldValue.arrayRemove([uid])
-      });
+      DocumentReference currentUserDocRef =
+          _firestore.collection('users').doc(currentUserId);
+      DocumentReference unfollowUserDocRef =
+          _firestore.collection('users').doc(unfollowUserId);
 
-      // Remove 'followId' from 'uid's following list
-      await _firestore.collection('users').doc(uid).update({
-        'following': FieldValue.arrayRemove([followId])
+      return _firestore.runTransaction((transaction) async {
+        transaction.update(currentUserDocRef, {
+          'following': FieldValue.arrayRemove([unfollowUserId])
+        });
+        transaction.update(unfollowUserDocRef, {
+          'followers': FieldValue.arrayRemove([currentUserId])
+        });
       });
+    } on FirebaseException catch (e) {
+      debugPrint("FirebaseException during unfollow: ${e.message}");
     } catch (e) {
-      if (kDebugMode) print(e.toString());
+      debugPrint("Unknown exception during unfollow: $e");
     }
   }
 }
