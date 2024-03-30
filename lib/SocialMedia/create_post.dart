@@ -4,53 +4,58 @@ import 'package:video_player/video_player.dart';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:mobileapp/SocialMedia/feed.dart';
+import 'package:mobileapp/SocialMedia/comments.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class Post {
   final String id;
-  final String userName;
+  final String username;
   final String userId;
   final String timestamp;
   final String? imageUrl;
   final String? videoUrl;
   final String caption;
   int likes;
+  List<Comment> comments;
 
   Post({
     required this.id,
-    required this.userName,
+    required this.username,
     required this.userId,
     required this.timestamp,
     this.imageUrl,
     this.videoUrl,
     required this.caption,
     this.likes = 0,
+    this.comments = const [],
   });
 
   factory Post.fromFirestore(Map<String, dynamic> firestore, String id) {
     return Post(
       id: id,
-      userName: firestore['userName'] ?? 'Unknown User',
+      username: firestore['username'] ?? 'Unknown User',
       userId: firestore['userId'] ?? '',
       timestamp: firestore['timestamp'] ?? DateTime.now().toString(),
       imageUrl: firestore['imageUrl'],
       videoUrl: firestore['videoUrl'],
       caption: firestore['caption'] ?? '',
       likes: firestore['likes'] ?? 0,
+      comments: [],
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'userName': userName,
+      'userName': username,
       'userId': userId,
       'timestamp': timestamp,
       'imageUrl': imageUrl,
       'videoUrl': videoUrl,
       'caption': caption,
       'likes': likes,
+      'comments': comments.map((comment) => comment.toMap()).toList(),
     };
   }
 }
@@ -162,6 +167,10 @@ class _AddPostScreenState extends State<AddPostScreen> {
     }
   }
 
+  String generatePostId() {
+    return FirebaseFirestore.instance.collection('posts').doc().id;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -266,25 +275,33 @@ class _AddPostScreenState extends State<AddPostScreen> {
 
                     final user = FirebaseAuth.instance.currentUser;
                     if (user != null) {
-                      final post = Post(
-                        id: '',
-                        userName: user.displayName ?? 'Unknown User',
-                        userId: user.uid,
-                        timestamp: DateTime.now().toString(),
-                        caption: captionText,
-                        imageUrl: imageUrl,
-                        videoUrl: videoUrl,
-                      );
+                      final FirebaseFirestore _db = FirebaseFirestore.instance;
+                      DocumentSnapshot userSnapshot =
+                          await _db.collection('users').doc(user.uid).get();
+                      if (userSnapshot.exists) {
+                        final userData =
+                            userSnapshot.data() as Map<String, dynamic>;
+                        final username = userData['username'] ?? 'Unknown User';
+                        final post = Post(
+                          id: generatePostId(),
+                          username: username,
+                          userId: user.uid,
+                          timestamp: DateTime.now().toString(),
+                          caption: captionText,
+                          imageUrl: imageUrl,
+                          videoUrl: videoUrl,
+                        );
 
-                      await FirestoreService().addPost(post);
-                      widget.onPostAdded(post);
+                        await FirestoreService().addPost(post);
+                        widget.onPostAdded(post);
 
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => FeedScreen(posts: []),
-                        ),
-                      );
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => FeedScreen(posts: []),
+                          ),
+                        );
+                      }
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(

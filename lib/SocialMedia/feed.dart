@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:mobileapp/SocialMedia/create_post.dart';
+import 'package:mobileapp/SocialMedia/comments.dart';
 import 'package:mobileapp/platforms/sidemenu.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -126,8 +127,7 @@ class FeedScreen extends StatelessWidget {
                     children: [
                       CircleAvatar(
                         radius: 20,
-                        // Placeholder for profile image
-                        //backgroundImage: NetworkImage(post.profileImageUrl),
+                        // pfp
                       ),
                       const SizedBox(width: 8),
                       Text(
@@ -158,7 +158,7 @@ class FeedScreen extends StatelessWidget {
           if (post.videoUrl != null)
             _VideoPlayerWidget(videoUrl: post.videoUrl!),
           const SizedBox(height: 8),
-          // Caption
+          //caption
           Padding(
             padding: const EdgeInsets.only(left: 8.0, right: 8.0),
             child: FutureBuilder<DocumentSnapshot>(
@@ -173,56 +173,80 @@ class FeedScreen extends StatelessWidget {
                       snapshot.data!.data() as Map<String, dynamic>;
                   final username = userData['username'];
 
-                  return RichText(
-                    text: TextSpan(
-                      style: TextStyle(fontSize: 16, color: Colors.black),
-                      children: [
-                        TextSpan(
-                          text: '$username ',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        TextSpan(
-                          text: post.caption,
-                          style: TextStyle(fontWeight: FontWeight.normal),
-                        ),
-                      ],
-                    ),
-                  );
+                  if (post.imageUrl == null && post.videoUrl == null) {
+                    return Text(
+                      post.caption,
+                      style: TextStyle(fontSize: 16),
+                    );
+                  } else {
+                    return RichText(
+                      text: TextSpan(
+                        style: TextStyle(fontSize: 16, color: Colors.black),
+                        children: [
+                          TextSpan(
+                            text: '$username ',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          TextSpan(
+                            text: post.caption,
+                            style: TextStyle(fontWeight: FontWeight.normal),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
                 }
               },
             ),
           ),
-          // Like, Comment
+          // likes and comments
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.favorite_border),
-                    onPressed: () {
-                      // Implement like functionality
-                      _likePost(post);
-                    },
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    '${post.likes} likes',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(width: 8),
-                ],
+              IconButton(
+                icon: Icon(Icons.favorite_border),
+                onPressed: () {
+                  _likePost(post);
+                },
               ),
+              const SizedBox(width: 8),
               IconButton(
                 icon: Icon(Icons.comment),
                 onPressed: () {
-                  // Implement comment functionality
+                  // Navigate to AddCommentScreen when comment icon is tapped
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AddCommentScreen(postId: post.id),
+                    ),
+                  );
                 },
               ),
             ],
           ),
+          // likes count
+          Padding(
+            padding: const EdgeInsets.only(left: 16.0),
+            child: Text(
+              '${post.likes} likes',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+          ),
           const SizedBox(height: 8),
-          // Comments
+          // comments section
+          const Padding(
+            padding: EdgeInsets.only(left: 16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Comments',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+                SizedBox(height: 8),
+                // display comment count
+              ],
+            ),
+          ),
           _buildTimestamp(post.timestamp),
         ],
       ),
@@ -230,14 +254,14 @@ class FeedScreen extends StatelessWidget {
   }
 
   void _likePost(Post post) {
-    post.likes++; // Increment likes locally
+    post.likes++;
     FirestoreService().updatePostLikes(post.id, post.likes);
   }
 
   Widget _buildTimestamp(String? timestamp) {
     final formattedTimestamp = _formatTimestamp(timestamp);
     return Padding(
-      padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+      padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 8.0),
       child: Text(
         formattedTimestamp,
         style: const TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
