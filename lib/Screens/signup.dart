@@ -46,7 +46,7 @@ class SignUpScreen extends StatelessWidget {
 
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => AddPFPScreen()),
+        MaterialPageRoute(builder: (context) => const AddPFPScreen()),
       );
     } catch (e) {
       print('Error signing up: $e');

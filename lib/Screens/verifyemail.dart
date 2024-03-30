@@ -79,7 +79,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
     if (user.emailVerified) {
       timer.cancel();
       Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => LoginScreen()));
+          MaterialPageRoute(builder: (context) => const LoginScreen()));
     }
   }
 }

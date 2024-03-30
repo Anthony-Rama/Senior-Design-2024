@@ -15,7 +15,7 @@ class FirestoreService {
       return userDoc;
     } catch (e) {
       print('Error getting user: $e');
-      throw e;
+      rethrow;
     }
   }
 
@@ -35,12 +35,12 @@ class FirestoreService {
 }
 
 class FeedScreen extends StatelessWidget {
-  const FeedScreen({Key? key, required List<Post> posts}) : super(key: key);
+  const FeedScreen({super.key, required List<Post> posts});
 
   @override
   Widget build(BuildContext context) {
     final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-    final Map<String, dynamic> _userDataCache = {};
+    final Map<String, dynamic> userDataCache = {};
 
     return Scaffold(
       key: scaffoldKey,
@@ -59,21 +59,21 @@ class FeedScreen extends StatelessWidget {
         future: FirestoreService().getPosts(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else {
             List<Post>? posts = snapshot.data;
 
             if (posts == null || posts.isEmpty) {
-              return Center(child: Text('No posts available'));
+              return const Center(child: Text('No posts available'));
             }
 
             return ListView.builder(
               itemCount: posts.length,
               itemBuilder: (context, index) {
                 final post = posts[index];
-                return _buildPostItem(context, post, _userDataCache);
+                return _buildPostItem(context, post, userDataCache);
               },
             );
           }
@@ -96,7 +96,7 @@ class FeedScreen extends StatelessWidget {
               future: FirestoreService().getUser(post.userId),
               builder: (context, userSnapshot) {
                 if (userSnapshot.connectionState == ConnectionState.waiting) {
-                  return SizedBox(
+                  return const SizedBox(
                     width: double.infinity,
                     child: LinearProgressIndicator(),
                   );
@@ -134,7 +134,7 @@ class FeedScreen extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               post.caption,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Row(
@@ -148,7 +148,7 @@ class FeedScreen extends StatelessWidget {
                         // Implement like functionality
                       },
                     ),
-                    SizedBox(width: 8),
+                    const SizedBox(width: 8),
                   ],
                 ),
                 Row(
@@ -159,7 +159,7 @@ class FeedScreen extends StatelessWidget {
                         // Implement comment functionality
                       },
                     ),
-                    SizedBox(width: 8),
+                    const SizedBox(width: 8),
                   ],
                 ),
               ],
@@ -176,7 +176,7 @@ class FeedScreen extends StatelessWidget {
     final formattedTimestamp = _formatTimestamp(timestamp);
     return Text(
       formattedTimestamp,
-      style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
+      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
     );
   }
 
@@ -202,8 +202,7 @@ class FeedScreen extends StatelessWidget {
 class _VideoPlayerWidget extends StatefulWidget {
   final String videoUrl;
 
-  const _VideoPlayerWidget({required this.videoUrl, Key? key})
-      : super(key: key);
+  const _VideoPlayerWidget({required this.videoUrl});
 
   @override
   _VideoPlayerWidgetState createState() => _VideoPlayerWidgetState();
@@ -243,7 +242,7 @@ class _VideoPlayerWidgetState extends State<_VideoPlayerWidget> {
             ],
           );
         } else {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         }
       },
     );
@@ -262,23 +261,23 @@ class _VideoPlayerControls extends StatelessWidget {
         VideoProgressIndicator(
           controller,
           allowScrubbing: true,
-          colors: VideoProgressColors(
+          colors: const VideoProgressColors(
             playedColor: Colors.red,
             bufferedColor: Colors.grey,
             backgroundColor: Colors.black,
           ),
         ),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         SizedBox(
           height: 40,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               IconButton(
-                icon: Icon(Icons.replay_5),
+                icon: const Icon(Icons.replay_5),
                 onPressed: () {
                   controller
-                      .seekTo(controller.value.position - Duration(seconds: 5));
+                      .seekTo(controller.value.position - const Duration(seconds: 5));
                 },
               ),
               IconButton(
@@ -294,10 +293,10 @@ class _VideoPlayerControls extends StatelessWidget {
                 },
               ),
               IconButton(
-                icon: Icon(Icons.forward_5),
+                icon: const Icon(Icons.forward_5),
                 onPressed: () {
                   controller
-                      .seekTo(controller.value.position + Duration(seconds: 5));
+                      .seekTo(controller.value.position + const Duration(seconds: 5));
                 },
               ),
               IconButton(
@@ -323,7 +322,7 @@ class VideoPlayerButton extends StatelessWidget {
   final VoidCallback onPressed;
   final IconData icon;
 
-  const VideoPlayerButton({
+  const VideoPlayerButton({super.key, 
     required this.onPressed,
     required this.icon,
   });

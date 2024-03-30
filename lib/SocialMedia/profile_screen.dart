@@ -88,12 +88,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
           userData['profilePic'] = imageURL;
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text('Profile picture updated successfully!'),
           backgroundColor: Colors.green,
         ));
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text('Failed to update profile picture. Please try again.'),
           backgroundColor: Colors.red,
         ));

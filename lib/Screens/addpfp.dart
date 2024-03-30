@@ -7,6 +7,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:mobileapp/Screens/verifyemail.dart';
 
 class AddPFPScreen extends StatefulWidget {
+  const AddPFPScreen({super.key});
+
   @override
   _AddPFPScreenState createState() => _AddPFPScreenState();
 }
@@ -29,10 +31,10 @@ class _AddPFPScreenState extends State<AddPFPScreen> {
 
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => VerifyEmailScreen()),
+        MaterialPageRoute(builder: (context) => const VerifyEmailScreen()),
       );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('Failed to upload image. Please try again.'),
         backgroundColor: Colors.red,
       ));
@@ -50,7 +52,7 @@ class _AddPFPScreenState extends State<AddPFPScreen> {
   }
 
   Future<void> skipImage() async {
-    final String defaultImageURL =
+    const String defaultImageURL =
         'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/1024px-Default_pfp.svg.png';
 
     await FirebaseFirestore.instance
@@ -60,7 +62,7 @@ class _AddPFPScreenState extends State<AddPFPScreen> {
 
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => VerifyEmailScreen()),
+      MaterialPageRoute(builder: (context) => const VerifyEmailScreen()),
     );
     
   }
@@ -70,9 +72,9 @@ class _AddPFPScreenState extends State<AddPFPScreen> {
     return Scaffold(
       appBar: AppBar(
         title:
-            Text('ADD PROFILE PICTURE', style: TextStyle(color: Colors.white)),
+            const Text('ADD PROFILE PICTURE', style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.red[400],
-        iconTheme: IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Center(child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -83,25 +85,25 @@ class _AddPFPScreenState extends State<AddPFPScreen> {
                     radius: 70,
                     backgroundImage: FileImage(_image!),
                   )
-                : CircleAvatar(
+                : const CircleAvatar(
                     radius: 70,
                     backgroundImage: NetworkImage(
                         'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/1024px-Default_pfp.svg.png'),
                   ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
                 onPressed: () async {
                   await selectImage();
                 },
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red[400]),
-                child: Text('Select Image', style: TextStyle(color: Colors.white))),
-            SizedBox(height: 10),
+                child: const Text('Select Image', style: TextStyle(color: Colors.white))),
+            const SizedBox(height: 10),
             ElevatedButton(
                 onPressed: () async {
                   await skipImage();
                 },
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red[400]),
-                child: Text('Skip', style: TextStyle(color: Colors.white)))
+                child: const Text('Skip', style: TextStyle(color: Colors.white)))
           ]),
     ));
   }
