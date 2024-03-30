@@ -6,7 +6,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:mobileapp/backend_resources/auth_methods.dart';
 import 'package:mobileapp/Screens/settings.dart';
 import 'package:mobileapp/SocialMedia/FollowersListScreen.dart';
 import 'package:mobileapp/SocialMedia/FollowingListScreen.dart';

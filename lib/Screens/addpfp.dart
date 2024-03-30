@@ -7,7 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:mobileapp/Screens/verifyemail.dart';
 
 class AddPFPScreen extends StatefulWidget {
-  const AddPFPScreen({Key? key}) : super(key: key);
+  const AddPFPScreen({super.key});
 
   @override
   _AddPFPScreenState createState() => _AddPFPScreenState();
@@ -34,7 +34,7 @@ class _AddPFPScreenState extends State<AddPFPScreen> {
         MaterialPageRoute(builder: (context) => const VerifyEmailScreen()),
       );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('Failed to upload image. Please try again.'),
         backgroundColor: Colors.red,
       ));
@@ -85,18 +85,18 @@ class _AddPFPScreenState extends State<AddPFPScreen> {
                     radius: 70,
                     backgroundImage: FileImage(_image!),
                     child: IconButton(
-                      icon: Icon(Icons.edit, color: Colors.white),
+                      icon: const Icon(Icons.edit, color: Colors.white),
                       onPressed: selectImage,
                     ),
                   )
                 : CircleAvatar(
                     radius: 70,
-                    backgroundImage: NetworkImage(
+                    backgroundImage: const NetworkImage(
                       'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/1024px-Default_pfp.svg.png',
                     ),
                     child: IconButton(
                       icon:
-                          Icon(Icons.add_photo_alternate, color: Colors.white),
+                          const Icon(Icons.add_photo_alternate, color: Colors.white),
                       onPressed: selectImage,
                     ),
                   ),
