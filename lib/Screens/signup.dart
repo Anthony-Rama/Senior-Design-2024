@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:mobileapp/Screens/verifyemail.dart';
+import 'package:mobileapp/Screens/addpfp.dart';
+//import 'package:mobileapp/Screens/verifyemail.dart';
 
 class SignUpScreen extends StatelessWidget {
   SignUpScreen({super.key});
@@ -45,7 +46,7 @@ class SignUpScreen extends StatelessWidget {
 
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const VerifyEmailScreen()),
+        MaterialPageRoute(builder: (context) => const AddPFPScreen()),
       );
     } catch (e) {
       print('Error signing up: $e');

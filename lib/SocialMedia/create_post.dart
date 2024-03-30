@@ -189,7 +189,8 @@ class _AddPostScreenState extends State<AddPostScreen> {
                 ElevatedButton(
                   onPressed: getImage,
                   style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white, backgroundColor: Colors.red[400],
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.red[400],
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30.0),
@@ -202,7 +203,8 @@ class _AddPostScreenState extends State<AddPostScreen> {
                 ElevatedButton(
                   onPressed: getVideo,
                   style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white, backgroundColor: Colors.red[400],
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.red[400],
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30.0),
@@ -292,14 +294,12 @@ class _AddPostScreenState extends State<AddPostScreen> {
 
                         await FirestoreService().addPost(post);
                         widget.onPostAdded(post);
-
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const FeedScreen(posts: []),
-                          ),
-                        );
-                      }
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const FeedScreen(posts: []),
+                        ),
+                      );
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
@@ -316,7 +316,8 @@ class _AddPostScreenState extends State<AddPostScreen> {
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white, backgroundColor: Colors.red[400],
+                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.red[400],
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30.0),

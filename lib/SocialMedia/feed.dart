@@ -118,6 +118,7 @@ class FeedScreen extends StatelessWidget {
                   return const Text('Loading...');
                 } else if (snapshot.hasError) {
                   return Text('Error loading user: ${snapshot.error}');
+
                 } else {
                   final userData =
                       snapshot.data!.data() as Map<String, dynamic>;
