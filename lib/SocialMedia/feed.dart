@@ -32,7 +32,10 @@ class FirestoreService {
 
   Future<List<Post>> getPosts() async {
     try {
-      QuerySnapshot querySnapshot = await _db.collection('posts').get();
+      QuerySnapshot querySnapshot = await _db
+          .collection('posts')
+          .orderBy('timestamp', descending: true)
+          .get();
       List<Post> posts = querySnapshot.docs.map((doc) {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
         return Post.fromFirestore(data, doc.id);
@@ -181,7 +184,8 @@ class FeedScreen extends StatelessWidget {
                   } else {
                     return RichText(
                       text: TextSpan(
-                        style: const TextStyle(fontSize: 16, color: Colors.black),
+                        style:
+                            const TextStyle(fontSize: 16, color: Colors.black),
                         children: [
                           TextSpan(
                             text: '$username ',
@@ -189,7 +193,8 @@ class FeedScreen extends StatelessWidget {
                           ),
                           TextSpan(
                             text: post.caption,
-                            style: const TextStyle(fontWeight: FontWeight.normal),
+                            style:
+                                const TextStyle(fontWeight: FontWeight.normal),
                           ),
                         ],
                       ),
@@ -397,8 +402,8 @@ class _VideoPlayerControls extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.replay_5),
                 onPressed: () {
-                  controller
-                      .seekTo(controller.value.position - const Duration(seconds: 5));
+                  controller.seekTo(
+                      controller.value.position - const Duration(seconds: 5));
                 },
               ),
               IconButton(
@@ -416,8 +421,8 @@ class _VideoPlayerControls extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.forward_5),
                 onPressed: () {
-                  controller
-                      .seekTo(controller.value.position + const Duration(seconds: 5));
+                  controller.seekTo(
+                      controller.value.position + const Duration(seconds: 5));
                 },
               ),
               IconButton(
@@ -443,7 +448,8 @@ class VideoPlayerButton extends StatelessWidget {
   final VoidCallback onPressed;
   final IconData icon;
 
-  const VideoPlayerButton({super.key, 
+  const VideoPlayerButton({
+    super.key,
     required this.onPressed,
     required this.icon,
   });
