@@ -6,7 +6,7 @@ import 'package:mobileapp/SocialMedia/profile_screen.dart';
 import 'package:mobileapp/SocialMedia/search_screen.dart';
 
 class MobileScreenLayout extends StatefulWidget {
-  const MobileScreenLayout({super.key});
+  const MobileScreenLayout({Key? key}) : super(key: key);
 
   @override
   State<MobileScreenLayout> createState() => _MobileScreenLayoutState();
@@ -15,7 +15,6 @@ class MobileScreenLayout extends StatefulWidget {
 class _MobileScreenLayoutState extends State<MobileScreenLayout> {
   int _page = 0;
   late PageController pageController;
-
   List<Post> posts = [];
 
   @override
@@ -52,17 +51,13 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
       body: PageView(
         controller: pageController,
         onPageChanged: onPageChanged,
-        physics: const NeverScrollableScrollPhysics(),
+        physics: NeverScrollableScrollPhysics(),
         children: [
-          FeedScreen(posts: posts),
+          FeedScreen(),
           const SearchScreen(),
-          AddPostScreen(
-            onPostAdded: addNewPost,
-          ),
+          Container(),
           const Center(child: Text('Notifs')),
-          ProfileScreen(
-            uid: FirebaseAuth.instance.currentUser!.uid,
-          ),
+          ProfileScreen(uid: FirebaseAuth.instance.currentUser!.uid),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -92,7 +87,23 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
             label: 'Profile',
           ),
         ],
-        onTap: navigationTapped,
+        onTap: (index) {
+          if (index == 2) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AddPostScreen(
+                  onPostAdded: (post) {
+                    addNewPost(post);
+                    pageController.jumpToPage(0);
+                  },
+                ),
+              ),
+            );
+          } else {
+            navigationTapped(index);
+          }
+        },
         currentIndex: _page,
       ),
     );

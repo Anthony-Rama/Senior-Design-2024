@@ -81,21 +81,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
         final Reference storageRef = FirebaseStorage.instance.ref().child(
             'profile_pictures/${FirebaseAuth.instance.currentUser!.uid}');
         await storageRef.putFile(image);
+
+        // Get the updated download URL
         final String imageURL = await storageRef.getDownloadURL();
 
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(FirebaseAuth.instance.currentUser!.uid)
-            .update({'profilePic': imageURL});
+        final currentUser = FirebaseAuth.instance.currentUser;
+        if (currentUser != null && mounted) {
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(currentUser.uid)
+              .update({'profilePic': imageURL});
 
-        setState(() {
-          userData['profilePic'] = imageURL;
-        });
+          setState(() {
+            userData['profilePic'] = imageURL;
+          });
 
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Profile picture updated successfully!'),
-          backgroundColor: Colors.green,
-        ));
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('Profile picture updated successfully!'),
+            backgroundColor: Colors.green,
+          ));
+        }
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text('Failed to update profile picture. Please try again.'),

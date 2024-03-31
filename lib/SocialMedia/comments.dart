@@ -37,7 +37,7 @@ class Comment {
 class AddCommentScreen extends StatefulWidget {
   final String postId;
 
-  const AddCommentScreen({super.key, required this.postId});
+  const AddCommentScreen({Key? key, required this.postId}) : super(key: key);
 
   @override
   _AddCommentScreenState createState() => _AddCommentScreenState();
@@ -67,7 +67,7 @@ class _AddCommentScreenState extends State<AddCommentScreen> {
           userSnapshot.data() as Map<String, dynamic>;
       setState(() {
         _currentUserUsername = userData['username'] ?? 'Unknown User';
-        _currentUserProfileImageUrl = userData['profileImageUrl'] ?? '';
+        _currentUserProfileImageUrl = userData['profilePic'] ?? '';
       });
     }
   }
@@ -112,8 +112,21 @@ class _AddCommentScreenState extends State<AddCommentScreen> {
         setState(() {
           comments.add(newComment);
         });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Comment added'),
+            backgroundColor: Colors.green,
+          ),
+        );
       } catch (e) {
         print('Error adding comment: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to add comment. Please try again.'),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
 
       commentController.clear();
@@ -128,46 +141,69 @@ class _AddCommentScreenState extends State<AddCommentScreen> {
         title: const Text('ADD COMMENT', style: TextStyle(color: Colors.white)),
         centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Column(
-          children: [
-            Expanded(
-              child: ListView.builder(
-                itemCount: comments.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    leading: CircleAvatar(
-                      backgroundImage:
-                          NetworkImage(comments[index].profileImageUrl ?? ''),
-                    ),
-                    title: Text(comments[index].username),
-                    subtitle: Text(comments[index].commentText),
-                  );
-                },
-              ),
+      body: Column(
+        children: [
+          Expanded(
+            child: StreamBuilder<DocumentSnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(_currentUser.uid)
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return Center(child: CircularProgressIndicator());
+                }
+
+                Map<String, dynamic> userData =
+                    snapshot.data!.data() as Map<String, dynamic>;
+                _currentUserProfileImageUrl = userData['profilePic'] ?? '';
+
+                return ListView.builder(
+                  itemCount: comments.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      leading: CircleAvatar(
+                        backgroundImage: NetworkImage(
+                          comments[index].profileImageUrl ??
+                              _currentUserProfileImageUrl,
+                        ),
+                      ),
+                      title: Text(comments[index].username),
+                      subtitle: Text(comments[index].commentText),
+                    );
+                  },
+                );
+              },
             ),
-            TextField(
-              controller: commentController,
-              decoration: const InputDecoration(
-                hintText: 'Write a comment...',
-              ),
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _submitComment,
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white, backgroundColor: Colors.red[400],
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30.0),
-                  side: BorderSide(color: Colors.red[400]!),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Column(
+              children: [
+                TextField(
+                  controller: commentController,
+                  decoration: const InputDecoration(
+                    hintText: 'Write a comment...',
+                  ),
                 ),
-              ),
-              child: const Text('SUBMIT COMMENT'),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: _submitComment,
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.red[400],
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                      side: BorderSide(color: Colors.red[400]!),
+                    ),
+                  ),
+                  child: const Text('SUBMIT COMMENT'),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
