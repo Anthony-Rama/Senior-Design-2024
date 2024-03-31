@@ -3,7 +3,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:mobileapp/SocialMedia/feed.dart';
 import 'package:mobileapp/SocialMedia/comments.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -16,8 +15,9 @@ class Post {
   final String? imageUrl;
   final String? videoUrl;
   final String caption;
-  int likes;
   List<Comment> comments;
+  int likes;
+  List<String> likedBy;
 
   Post({
     required this.id,
@@ -27,9 +27,10 @@ class Post {
     this.imageUrl,
     this.videoUrl,
     required this.caption,
-    this.likes = 0,
     this.comments = const [],
-  });
+    this.likes = 0,
+    List<String>? likedBy,
+  }) : likedBy = likedBy ?? [];
 
   factory Post.fromFirestore(Map<String, dynamic> firestore, String id) {
     return Post(
@@ -40,22 +41,33 @@ class Post {
       imageUrl: firestore['imageUrl'],
       videoUrl: firestore['videoUrl'],
       caption: firestore['caption'] ?? '',
-      likes: firestore['likes'] ?? 0,
       comments: [],
+      likes: firestore['likes'] ?? 0,
+      likedBy: List<String>.from(firestore['likedBy'] ?? []),
     );
+  }
+
+  void toggleLike(String userId) {
+    if (likedBy.contains(userId)) {
+      likedBy.remove(userId);
+      likes--;
+    } else {
+      likedBy.add(userId);
+      likes++;
+    }
   }
 
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'userName': username,
+      'username': username,
       'userId': userId,
       'timestamp': timestamp,
       'imageUrl': imageUrl,
       'videoUrl': videoUrl,
       'caption': caption,
       'likes': likes,
-      'comments': comments.map((comment) => comment.toMap()).toList(),
+      'likedBy': likedBy,
     };
   }
 }
@@ -204,7 +216,6 @@ class _AddPostScreenState extends State<AddPostScreen> {
         await FirestoreService().addPost(post);
         widget.onPostAdded(post);
 
-        // Inform the parent that post is added and let it handle navigation
         Navigator.pop(context, true);
       }
     } else {

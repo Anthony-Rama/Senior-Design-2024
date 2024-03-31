@@ -4,17 +4,16 @@ import 'package:mobileapp/SocialMedia/create_post.dart';
 import 'package:mobileapp/SocialMedia/comments.dart';
 import 'package:mobileapp/platforms/sidemenu.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class FirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
-  Future<void> updatePostLikes(String postId, int likes) async {
+  Future<void> updateLikes(Post post) async {
     try {
-      await _db.collection('posts').doc(postId).update({
-        'likes': likes,
-      });
+      await _db.collection('posts').doc(post.id).update(post.toMap());
     } catch (e) {
-      print('Error updating post likes: $e');
+      print('Error updating post: $e');
     }
   }
 
@@ -54,22 +53,91 @@ class FirestoreService {
       print('Error deleting post from Firestore: $e');
     }
   }
+
+  Future<void> addComment(String postId, String comment, String userId,
+      String username, String profilePic) async {
+    try {
+      await _db.collection('posts').doc(postId).collection('comments').add({
+        'userId': userId,
+        'username': username,
+        'profilePic': profilePic,
+        'comment': comment,
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      print('Error adding comment: $e');
+      rethrow;
+    }
+  }
 }
 
-class FeedScreen extends StatelessWidget {
-  const FeedScreen({super.key, required List<Post> posts});
+class FeedScreen extends StatefulWidget {
+  const FeedScreen({Key? key}) : super(key: key);
+
+  @override
+  _FeedScreenState createState() => _FeedScreenState();
+}
+
+class _FeedScreenState extends State<FeedScreen> {
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+  final Map<String, dynamic> userDataCache = {};
+  late List<Post> posts;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchPosts();
+  }
+
+  Future<void> fetchPosts() async {
+    try {
+      final List<Post> fetchedPosts = await FirestoreService().getPosts();
+      setState(() {
+        posts = fetchedPosts;
+        for (var post in posts) {
+          fetchCommentsForPost(post);
+        }
+      });
+    } catch (e) {
+      print('Error fetching posts: $e');
+    }
+  }
+
+  Future<void> fetchCommentsForPost(Post post) async {
+    try {
+      final DocumentSnapshot postSnapshot = await FirebaseFirestore.instance
+          .collection('posts')
+          .doc(post.id)
+          .get();
+      if (postSnapshot.exists) {
+        final List<dynamic>? commentsData = postSnapshot['comments'];
+        if (commentsData != null) {
+          List<Comment> fetchedComments = commentsData
+              .map(
+                (comment) => Comment.fromMap(comment),
+              )
+              .toList();
+
+          setState(() {
+            post.comments = fetchedComments;
+          });
+        }
+      }
+    } catch (e) {
+      print('Error fetching comments for post ${post.id}: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-    final Map<String, dynamic> userDataCache = {};
-
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(
         backgroundColor: Colors.red[400],
-        title:
-            const Text('BELLBOARD FEED', style: TextStyle(color: Colors.white)),
+        title: const Text(
+          'BELLBOARD FEED',
+          style: TextStyle(color: Colors.white),
+        ),
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.menu, color: Colors.white),
@@ -77,32 +145,25 @@ class FeedScreen extends StatelessWidget {
         ),
       ),
       drawer: const sideMenu(),
-      body: FutureBuilder<List<Post>>(
-        future: FirestoreService().getPosts(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else {
-            List<Post>? posts = snapshot.data;
-
-            if (posts == null || posts.isEmpty) {
-              return const Center(child: Text('No posts available'));
-            }
-
-            return ListView.separated(
-              itemCount: posts.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 5.0),
-              itemBuilder: (context, index) {
-                final post = posts[index];
-                return _buildPostItem(context, post, userDataCache);
-              },
-            );
-          }
-        },
-      ),
+      body: _buildPostsList(),
     );
+  }
+
+  Widget _buildPostsList() {
+    if (posts == null) {
+      return const Center(child: CircularProgressIndicator());
+    } else if (posts.isEmpty) {
+      return const Center(child: Text('No posts available'));
+    } else {
+      return ListView.separated(
+        itemCount: posts.length,
+        separatorBuilder: (context, index) => const SizedBox(height: 5.0),
+        itemBuilder: (context, index) {
+          final post = posts[index];
+          return _buildPostItem(context, post, userDataCache);
+        },
+      );
+    }
   }
 
   Widget _buildPostItem(
@@ -135,7 +196,6 @@ class FeedScreen extends StatelessWidget {
                             ? NetworkImage(profilePic as String)
                             : const AssetImage('assets/default_avatar.jpg')
                                 as ImageProvider,
-                        // You can use a default avatar image if profilePic is null
                       ),
                       const SizedBox(width: 8),
                       Text(
@@ -213,7 +273,10 @@ class FeedScreen extends StatelessWidget {
           Row(
             children: [
               IconButton(
-                icon: const Icon(Icons.favorite_border),
+                icon: post.likedBy
+                        .contains(FirebaseAuth.instance.currentUser!.uid)
+                    ? const Icon(Icons.favorite)
+                    : const Icon(Icons.favorite_border),
                 onPressed: () {
                   _likePost(post);
                 },
@@ -225,7 +288,9 @@ class FeedScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => AddCommentScreen(postId: post.id),
+                      builder: (context) => AddCommentScreen(
+                        postId: post.id,
+                      ),
                     ),
                   );
                 },
@@ -242,7 +307,7 @@ class FeedScreen extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           // comments section
-          const Padding(
+          Padding(
             padding: EdgeInsets.only(left: 16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -251,20 +316,54 @@ class FeedScreen extends StatelessWidget {
                   'Comments',
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
-                SizedBox(height: 8),
+                SizedBox(height: 2),
                 // display comment count
+                _buildCommentCount(post.comments.length),
               ],
             ),
           ),
+          const SizedBox(height: 8),
           _buildTimestamp(post.timestamp),
         ],
       ),
     );
   }
 
+  Widget _buildCommentCount(int commentCount) {
+    if (commentCount == 0) {
+      return Text('No comments yet');
+    } else if (commentCount == 1) {
+      return Text('View 1 comment');
+    } else {
+      return Text('View all $commentCount comments');
+    }
+  }
+
   void _likePost(Post post) {
-    post.likes++;
-    FirestoreService().updatePostLikes(post.id, post.likes);
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please log in to like posts')),
+      );
+      return;
+    }
+
+    setState(() {
+      post.toggleLike(currentUser.uid);
+    });
+
+    FirestoreService().updateLikes(post);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          post.likedBy.contains(currentUser.uid)
+              ? 'Post liked!'
+              : 'Post unliked!',
+        ),
+        backgroundColor: Colors.green,
+      ),
+    );
   }
 
   Widget _buildTimestamp(String? timestamp) {
@@ -326,6 +425,7 @@ class FeedScreen extends StatelessWidget {
 
   void _deletePost(String postId) {
     FirestoreService().deletePost(postId);
+    setState(() {});
   }
 }
 
@@ -453,10 +553,10 @@ class VideoPlayerButton extends StatelessWidget {
   final IconData icon;
 
   const VideoPlayerButton({
-    super.key,
+    Key? key,
     required this.onPressed,
     required this.icon,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

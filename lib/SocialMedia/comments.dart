@@ -112,8 +112,21 @@ class _AddCommentScreenState extends State<AddCommentScreen> {
         setState(() {
           comments.add(newComment);
         });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Comment added'),
+            backgroundColor: Colors.green,
+          ),
+        );
       } catch (e) {
         print('Error adding comment: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to add comment. Please try again.'),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
 
       commentController.clear();
@@ -143,8 +156,7 @@ class _AddCommentScreenState extends State<AddCommentScreen> {
 
                 Map<String, dynamic> userData =
                     snapshot.data!.data() as Map<String, dynamic>;
-                _currentUserProfileImageUrl =
-                    userData['profilePic'] ?? _currentUserProfileImageUrl;
+                _currentUserProfileImageUrl = userData['profilePic'] ?? '';
 
                 return ListView.builder(
                   itemCount: comments.length,
@@ -152,8 +164,9 @@ class _AddCommentScreenState extends State<AddCommentScreen> {
                     return ListTile(
                       leading: CircleAvatar(
                         backgroundImage: NetworkImage(
-                            comments[index].profileImageUrl ??
-                                _currentUserProfileImageUrl),
+                          comments[index].profileImageUrl ??
+                              _currentUserProfileImageUrl,
+                        ),
                       ),
                       title: Text(comments[index].username),
                       subtitle: Text(comments[index].commentText),
