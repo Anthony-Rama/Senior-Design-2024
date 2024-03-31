@@ -125,12 +125,17 @@ class FeedScreen extends StatelessWidget {
                   final userData =
                       snapshot.data!.data() as Map<String, dynamic>;
                   final username = userData['username'];
+                  final profilePic = userData['profilePic'];
 
                   return Row(
                     children: [
-                      const CircleAvatar(
+                      CircleAvatar(
                         radius: 20,
-                        // pfp
+                        backgroundImage: profilePic != null
+                            ? NetworkImage(profilePic as String)
+                            : const AssetImage('assets/default_avatar.jpg')
+                                as ImageProvider,
+                        // You can use a default avatar image if profilePic is null
                       ),
                       const SizedBox(width: 8),
                       Text(
@@ -217,7 +222,6 @@ class FeedScreen extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.comment),
                 onPressed: () {
-                  // Navigate to AddCommentScreen when comment icon is tapped
                   Navigator.push(
                     context,
                     MaterialPageRoute(

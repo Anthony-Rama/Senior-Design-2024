@@ -109,28 +109,21 @@ class FirestoreService {
 class AddPostScreen extends StatefulWidget {
   final Function(Post) onPostAdded;
 
-  const AddPostScreen({super.key, required this.onPostAdded});
+  const AddPostScreen({Key? key, required this.onPostAdded}) : super(key: key);
 
   @override
   _AddPostScreenState createState() => _AddPostScreenState();
 }
 
 class _AddPostScreenState extends State<AddPostScreen> {
-  final TextEditingController bodyController = TextEditingController();
-
+  final TextEditingController _bodyController = TextEditingController();
   XFile? _image;
   XFile? _video;
   final ImagePicker _picker = ImagePicker();
   VideoPlayerController? _videoController;
   bool _isUploading = false;
 
-  @override
-  void dispose() {
-    _videoController?.dispose();
-    super.dispose();
-  }
-
-  Future<void> getImage() async {
+  void _getImage() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
@@ -145,7 +138,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
     }
   }
 
-  Future<void> getVideo() async {
+  void _getVideo() async {
     final pickedFile = await _picker.pickVideo(source: ImageSource.gallery);
 
     if (pickedFile != null) {
@@ -167,8 +160,60 @@ class _AddPostScreenState extends State<AddPostScreen> {
     }
   }
 
-  String generatePostId() {
+  String _generatePostId() {
     return FirebaseFirestore.instance.collection('posts').doc().id;
+  }
+
+  Future<void> _submitPost() async {
+    final captionText = _bodyController.text.trim();
+    if (captionText.isEmpty || _isUploading) return;
+
+    setState(() {
+      _isUploading = true;
+    });
+
+    String? imageUrl;
+    String? videoUrl;
+
+    if (_image != null) {
+      imageUrl = await StorageService().uploadMedia(_image!, 'post_images');
+    }
+
+    if (_video != null) {
+      videoUrl = await StorageService().uploadMedia(_video!, 'post_videos');
+    }
+
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final FirebaseFirestore db = FirebaseFirestore.instance;
+      DocumentSnapshot userSnapshot =
+          await db.collection('users').doc(user.uid).get();
+      if (userSnapshot.exists) {
+        final userData = userSnapshot.data() as Map<String, dynamic>;
+        final username = userData['username'] ?? 'Unknown User';
+        final post = Post(
+          id: _generatePostId(),
+          username: username,
+          userId: user.uid,
+          timestamp: DateTime.now().toString(),
+          caption: captionText,
+          imageUrl: imageUrl,
+          videoUrl: videoUrl,
+        );
+
+        await FirestoreService().addPost(post);
+        widget.onPostAdded(post);
+
+        // Inform the parent that post is added and let it handle navigation
+        Navigator.pop(context, true);
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('User is not signed in.'),
+        ),
+      );
+    }
   }
 
   @override
@@ -187,9 +232,10 @@ class _AddPostScreenState extends State<AddPostScreen> {
             children: [
               if (_image == null && _video == null) ...[
                 ElevatedButton(
-                  onPressed: getImage,
+                  onPressed: _getImage,
                   style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white, backgroundColor: Colors.red[400],
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.red[400],
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30.0),
@@ -200,9 +246,10 @@ class _AddPostScreenState extends State<AddPostScreen> {
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed: getVideo,
+                  onPressed: _getVideo,
                   style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white, backgroundColor: Colors.red[400],
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.red[400],
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30.0),
@@ -246,77 +293,15 @@ class _AddPostScreenState extends State<AddPostScreen> {
                     : const CircularProgressIndicator(),
               const SizedBox(height: 20),
               TextField(
-                controller: bodyController,
+                controller: _bodyController,
                 decoration: const InputDecoration(labelText: 'Add a caption'),
                 maxLines: null,
               ),
               ElevatedButton(
-                onPressed: () async {
-                  final captionText = bodyController.text;
-                  if (captionText.isNotEmpty && !_isUploading) {
-                    setState(() {
-                      _isUploading = true;
-                    });
-
-                    String? imageUrl;
-                    String? videoUrl;
-
-                    if (_image != null) {
-                      imageUrl = await StorageService()
-                          .uploadMedia(_image!, 'post_images');
-                    }
-
-                    if (_video != null) {
-                      videoUrl = await StorageService()
-                          .uploadMedia(_video!, 'post_videos');
-                    }
-
-                    final user = FirebaseAuth.instance.currentUser;
-                    if (user != null) {
-                      final FirebaseFirestore db = FirebaseFirestore.instance;
-                      DocumentSnapshot userSnapshot =
-                          await db.collection('users').doc(user.uid).get();
-                      if (userSnapshot.exists) {
-                        final userData =
-                            userSnapshot.data() as Map<String, dynamic>;
-                        final username = userData['username'] ?? 'Unknown User';
-                        final post = Post(
-                          id: generatePostId(),
-                          username: username,
-                          userId: user.uid,
-                          timestamp: DateTime.now().toString(),
-                          caption: captionText,
-                          imageUrl: imageUrl,
-                          videoUrl: videoUrl,
-                        );
-
-                        await FirestoreService().addPost(post);
-                        widget.onPostAdded(post);
-
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const FeedScreen(posts: []),
-                          ),
-                        );
-                      }
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('User is not signed in.'),
-                        ),
-                      );
-                    }
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Caption cannot be empty.'),
-                      ),
-                    );
-                  }
-                },
+                onPressed: _submitPost,
                 style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white, backgroundColor: Colors.red[400],
+                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.red[400],
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30.0),

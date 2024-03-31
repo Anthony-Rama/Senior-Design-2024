@@ -6,7 +6,7 @@ import 'package:mobileapp/SocialMedia/profile_screen.dart';
 import 'package:mobileapp/SocialMedia/search_screen.dart';
 
 class MobileScreenLayout extends StatefulWidget {
-  const MobileScreenLayout({super.key});
+  const MobileScreenLayout({Key? key});
 
   @override
   State<MobileScreenLayout> createState() => _MobileScreenLayoutState();
@@ -56,13 +56,9 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
         children: [
           FeedScreen(posts: posts),
           const SearchScreen(),
-          AddPostScreen(
-            onPostAdded: addNewPost,
-          ),
+          Container(), // We don't need to render AddPostScreen directly here
           const Center(child: Text('Notifs')),
-          ProfileScreen(
-            uid: FirebaseAuth.instance.currentUser!.uid,
-          ),
+          ProfileScreen(uid: FirebaseAuth.instance.currentUser!.uid),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -92,7 +88,25 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
             label: 'Profile',
           ),
         ],
-        onTap: navigationTapped,
+        onTap: (index) {
+          if (index == 2) {
+            // If Add Post button is tapped, navigate to AddPostScreen
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AddPostScreen(
+                  onPostAdded: (post) {
+                    addNewPost(post);
+                    pageController.jumpToPage(0); // Navigate to FeedScreen
+                  },
+                ),
+              ),
+            );
+          } else {
+            // For other bottom nav items, change page
+            navigationTapped(index);
+          }
+        },
         currentIndex: _page,
       ),
     );
