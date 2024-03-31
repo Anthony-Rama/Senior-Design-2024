@@ -478,6 +478,13 @@ class _FeedScreenState extends State<FeedScreen> {
   void _deletePost(String postId) {
     FirestoreService().deletePost(postId);
     setState(() {});
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Post deleted successfully'),
+        backgroundColor: Colors.green,
+      ),
+    );
   }
 }
 
