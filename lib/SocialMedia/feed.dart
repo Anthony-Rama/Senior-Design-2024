@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 import 'package:video_player/video_player.dart';
 import 'package:mobileapp/SocialMedia/create_post.dart';
 import 'package:mobileapp/SocialMedia/comments.dart';
@@ -53,22 +54,6 @@ class FirestoreService {
       print('Error deleting post from Firestore: $e');
     }
   }
-
-  Future<void> addComment(String postId, String comment, String userId,
-      String username, String profilePic) async {
-    try {
-      await _db.collection('posts').doc(postId).collection('comments').add({
-        'userId': userId,
-        'username': username,
-        'profilePic': profilePic,
-        'comment': comment,
-        'timestamp': FieldValue.serverTimestamp(),
-      });
-    } catch (e) {
-      print('Error adding comment: $e');
-      rethrow;
-    }
-  }
 }
 
 class FeedScreen extends StatefulWidget {
@@ -81,26 +66,34 @@ class FeedScreen extends StatefulWidget {
 class _FeedScreenState extends State<FeedScreen> {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   final Map<String, dynamic> userDataCache = {};
-  late List<Post> posts;
+  late List<Post> posts = [];
+  late StreamSubscription<QuerySnapshot> _postsSubscription;
 
   @override
   void initState() {
     super.initState();
-    fetchPosts();
+    _subscribeToPosts();
   }
 
-  Future<void> fetchPosts() async {
-    try {
-      final List<Post> fetchedPosts = await FirestoreService().getPosts();
+  void _subscribeToPosts() {
+    _postsSubscription = FirebaseFirestore.instance
+        .collection('posts')
+        .orderBy('timestamp', descending: true)
+        .snapshots()
+        .listen((QuerySnapshot snapshot) async {
+      List<Post> updatedPosts = [];
+
+      for (var doc in snapshot.docs) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        Post post = Post.fromFirestore(data, doc.id);
+        await fetchCommentsForPost(post);
+        updatedPosts.add(post);
+      }
+
       setState(() {
-        posts = fetchedPosts;
-        for (var post in posts) {
-          fetchCommentsForPost(post);
-        }
+        posts = updatedPosts;
       });
-    } catch (e) {
-      print('Error fetching posts: $e');
-    }
+    }, onError: (e) => print('Error fetching posts: $e'));
   }
 
   Future<void> fetchCommentsForPost(Post post) async {
@@ -129,6 +122,12 @@ class _FeedScreenState extends State<FeedScreen> {
   }
 
   @override
+  void dispose() {
+    _postsSubscription.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
@@ -150,20 +149,35 @@ class _FeedScreenState extends State<FeedScreen> {
   }
 
   Widget _buildPostsList() {
-    if (posts == null) {
-      return const Center(child: CircularProgressIndicator());
-    } else if (posts.isEmpty) {
-      return const Center(child: Text('No posts available'));
-    } else {
-      return ListView.separated(
-        itemCount: posts.length,
-        separatorBuilder: (context, index) => const SizedBox(height: 5.0),
-        itemBuilder: (context, index) {
-          final post = posts[index];
-          return _buildPostItem(context, post, userDataCache);
-        },
-      );
-    }
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('posts')
+          .orderBy('timestamp', descending: true)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          return const Center(child: Text('No posts available'));
+        } else {
+          List<Post> posts = snapshot.data!.docs.map((doc) {
+            Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+            return Post.fromFirestore(data, doc.id);
+          }).toList();
+
+          return ListView.separated(
+            itemCount: posts.length,
+            separatorBuilder: (context, index) => const SizedBox(height: 5.0),
+            itemBuilder: (context, index) {
+              final post = posts[index];
+              return _buildPostItem(context, post, userDataCache);
+            },
+          );
+        }
+      },
+    );
   }
 
   Widget _buildPostItem(
@@ -317,11 +331,11 @@ class _FeedScreenState extends State<FeedScreen> {
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
                 SizedBox(height: 2),
-                // display comment count
-                _buildCommentCount(post.comments.length),
+                _buildCommentCount(context, post),
               ],
             ),
           ),
+
           const SizedBox(height: 8),
           _buildTimestamp(post.timestamp),
         ],
@@ -329,14 +343,52 @@ class _FeedScreenState extends State<FeedScreen> {
     );
   }
 
-  Widget _buildCommentCount(int commentCount) {
-    if (commentCount == 0) {
-      return Text('No comments yet');
-    } else if (commentCount == 1) {
-      return Text('View 1 comment');
-    } else {
-      return Text('View all $commentCount comments');
-    }
+  Widget _buildCommentCount(BuildContext context, Post post) {
+    return StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('posts')
+          .doc(post.id)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return Text('Loading...');
+        }
+
+        final postData = snapshot.data!.data() as Map<String, dynamic>;
+        final commentsData = postData['comments'] as List<dynamic>?;
+
+        if (commentsData == null || commentsData.isEmpty) {
+          return Text('No comments yet');
+        } else {
+          final commentCount = commentsData.length;
+          if (commentCount == 1) {
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddCommentScreen(postId: post.id),
+                  ),
+                );
+              },
+              child: Text('View 1 comment'),
+            );
+          } else {
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddCommentScreen(postId: post.id),
+                  ),
+                );
+              },
+              child: Text('View all $commentCount comments'),
+            );
+          }
+        }
+      },
+    );
   }
 
   void _likePost(Post post) {
