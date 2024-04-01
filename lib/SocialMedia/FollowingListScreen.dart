@@ -4,14 +4,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class FollowingList extends StatelessWidget {
   final String uid;
 
-  const FollowingList({super.key, required this.uid});
+  const FollowingList({Key? key, required this.uid}) : super(key:key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Following'),
-        backgroundColor: Colors.blue,
+        title: const Text(
+          'FOLLOWING',
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Colors.red[400],
       ),
       body: StreamBuilder<DocumentSnapshot>(
         stream:
@@ -26,10 +29,11 @@ class FollowingList extends StatelessWidget {
           }
 
           DocumentSnapshot userDoc = snapshot.data!;
-          List<dynamic> followingIds = userDoc['following'];
+          List<dynamic> followingIds = userDoc.get('following');
 
-          if (followingIds.isEmpty) {
-            return const Center(child: Text("You're not following anyone yet."));
+          if (followingIds == null || followingIds.isEmpty) {
+            return const Center(
+                child: Text("You're not following anyone yet."));
           }
 
           return ListView.builder(
@@ -49,13 +53,16 @@ class FollowingList extends StatelessWidget {
                   }
 
                   DocumentSnapshot followingUserDoc = snapshot.data!;
+                  String? profilePicUrl =
+                      followingUserDoc['profilePic'] as String?;
                   return ListTile(
-                    leading: const CircleAvatar(
-                        // If you have a profile image URL, you can use NetworkImage
-                        // backgroundImage: NetworkImage(
-                        // followingUserDoc['profileImageUrl'] ?? ''),
-                        ),
-                    title: Text(followingUserDoc['name'] ?? 'No Name'),
+                    leading: CircleAvatar(
+                      // If you have a profile image URL, you can use NetworkImage
+                      backgroundImage:
+                          profilePicUrl != null ? 
+                          NetworkImage(profilePicUrl) : null,
+                    ),
+                    title: Text(followingUserDoc['username'] ?? 'No Name'),
                     // Optionally, navigate to the user profile or perform other actions when tapped
                     onTap: () => {},
                   );
