@@ -121,7 +121,7 @@ class FirestoreService {
 class AddPostScreen extends StatefulWidget {
   final Function(Post) onPostAdded;
 
-  const AddPostScreen({Key? key, required this.onPostAdded}) : super(key: key);
+  const AddPostScreen({super.key, required this.onPostAdded});
 
   @override
   _AddPostScreenState createState() => _AddPostScreenState();

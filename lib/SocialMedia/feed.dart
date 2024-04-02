@@ -57,7 +57,7 @@ class FirestoreService {
 }
 
 class FeedScreen extends StatefulWidget {
-  const FeedScreen({Key? key}) : super(key: key);
+  const FeedScreen({super.key});
 
   @override
   _FeedScreenState createState() => _FeedScreenState();
@@ -322,15 +322,15 @@ class _FeedScreenState extends State<FeedScreen> {
           const SizedBox(height: 8),
           // comments section
           Padding(
-            padding: EdgeInsets.only(left: 16.0),
+            padding: const EdgeInsets.only(left: 16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   'Comments',
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
-                SizedBox(height: 2),
+                const SizedBox(height: 2),
                 _buildCommentCount(context, post),
               ],
             ),
@@ -351,14 +351,14 @@ class _FeedScreenState extends State<FeedScreen> {
           .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return Text('Loading...');
+          return const Text('Loading...');
         }
 
         final postData = snapshot.data!.data() as Map<String, dynamic>;
         final commentsData = postData['comments'] as List<dynamic>?;
 
         if (commentsData == null || commentsData.isEmpty) {
-          return Text('No comments yet');
+          return const Text('No comments yet');
         } else {
           final commentCount = commentsData.length;
           if (commentCount == 1) {
@@ -371,7 +371,7 @@ class _FeedScreenState extends State<FeedScreen> {
                   ),
                 );
               },
-              child: Text('View 1 comment'),
+              child: const Text('View 1 comment'),
             );
           } else {
             return GestureDetector(
@@ -480,7 +480,7 @@ class _FeedScreenState extends State<FeedScreen> {
     setState(() {});
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
+      const SnackBar(
         content: Text('Post deleted successfully'),
         backgroundColor: Colors.green,
       ),
@@ -612,10 +612,10 @@ class VideoPlayerButton extends StatelessWidget {
   final IconData icon;
 
   const VideoPlayerButton({
-    Key? key,
+    super.key,
     required this.onPressed,
     required this.icon,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

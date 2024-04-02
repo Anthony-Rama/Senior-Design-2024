@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class FollowersList extends StatelessWidget {
   final String uid;
-  const FollowersList({Key? key, required this.uid}) : super(key:key);
+  const FollowersList({super.key, required this.uid});
 
   @override
   Widget build(BuildContext context) {
@@ -23,18 +23,18 @@ class FollowersList extends StatelessWidget {
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
           //if (snapshot.hasError) {
           //return Center(child: Text('Error: ${snapshot.error}'));
           //}
           if (!snapshot.hasData || !snapshot.data!.exists) {
-            return Center(child: Text("No data available."));
+            return const Center(child: Text("No data available."));
           }
 
           List<dynamic>? followers = snapshot.data!.get('followers');
           if (followers == null || followers.isEmpty) {
-            return Center(child: Text("No followers yet."));
+            return const Center(child: Text("No followers yet."));
           }
           //DocumentSnapshot userDoc = snapshot.data!;
           //List<dynamic> followersIds = userDoc.get('followers');
@@ -50,19 +50,19 @@ class FollowersList extends StatelessWidget {
                 .get(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return ListTile(
+                    return const ListTile(
                       leading: CircleAvatar(),
                       title: Text("Loading...")
                     );
                   }
                   if (!snapshot.hasData || !snapshot.data!.exists) {
-                    return ListTile(
+                    return const ListTile(
                       leading: CircleAvatar(),
                       title: Text("User not found"),
                     );
                   }
                   if (!snapshot.hasData || !snapshot.data!.exists) {
-                    return ListTile(
+                    return const ListTile(
                       leading: CircleAvatar(),
                       title: Text("User not found"),
                     );

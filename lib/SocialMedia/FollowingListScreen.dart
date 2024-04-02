@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class FollowingList extends StatelessWidget {
   final String uid;
 
-  const FollowingList({Key? key, required this.uid}) : super(key:key);
+  const FollowingList({super.key, required this.uid});
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +31,7 @@ class FollowingList extends StatelessWidget {
           DocumentSnapshot userDoc = snapshot.data!;
           List<dynamic> followingIds = userDoc.get('following');
 
-          if (followingIds == null || followingIds.isEmpty) {
+          if (followingIds.isEmpty) {
             return const Center(
                 child: Text("You're not following anyone yet."));
           }
