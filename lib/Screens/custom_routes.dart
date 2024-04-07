@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mobileapp/platforms/sidemenu.dart';
+import 'package:mobileapp/Screens/route_creation.dart';
 
 class CustomRoutes extends StatefulWidget {
-  const CustomRoutes({super.key});
+  const CustomRoutes({Key? key}) : super(key: key);
 
   @override
   _CustomRoutesState createState() => _CustomRoutesState();
@@ -39,7 +40,12 @@ class _CustomRoutesState extends State<CustomRoutes> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // TODO: Navigate to the grid to create a new custom route
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CustomRouteGridScreen(),
+            ),
+          );
         },
         backgroundColor: Colors.red[400],
         child: const Icon(Icons.add, color: Colors.white),
