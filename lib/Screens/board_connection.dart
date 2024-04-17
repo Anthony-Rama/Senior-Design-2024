@@ -57,6 +57,7 @@ class _BoardConnectState extends State<BoardConnect> {
                 //ANDREW WORK HERE
                 if (thedevice == null) {
                   scandevice();
+                  FlutterBluePlus.stopScan();
                 }
                 if (thedevice != null) {
                   connectdevice();
