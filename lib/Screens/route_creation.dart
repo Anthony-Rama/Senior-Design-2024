@@ -116,8 +116,8 @@ class _CustomRouteGridScreenState extends State<CustomRouteGridScreen> {
             }
           }
           print('Selected Holds: $selectedHolds');
-          if (BoardConnect.thedevice?.isConnected ?? false) {
-            BoardConnect.thedevice?.servicesList.first.characteristics.first
+          if (thedevice?.isConnected ?? false) {
+            thedevice?.servicesList.first.characteristics.first
                 .write(selectedHolds);
           } else {
             print("no device to write to, placeholder error");

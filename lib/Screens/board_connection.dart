@@ -4,9 +4,10 @@ import 'package:mobileapp/Screens/route_creation.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'dart:async';
 
+BluetoothDevice? thedevice;
+
 class BoardConnect extends StatefulWidget {
-  static BluetoothDevice? thedevice;
-  BoardConnect({Key? key}) : super(key: key);
+  const BoardConnect({Key? key}) : super(key: key);
 
   @override
   _BoardConnectState createState() => _BoardConnectState();
@@ -17,7 +18,6 @@ class _BoardConnectState extends State<BoardConnect> {
   Widget build(BuildContext context) {
     final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
-    BluetoothDevice? thedevice;
     scandevice() async {
       FlutterBluePlus.startScan();
       FlutterBluePlus.scanResults.listen((results) {
