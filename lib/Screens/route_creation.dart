@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'board_connection.dart';
 
 class CustomRouteGridScreen extends StatefulWidget {
   @override
@@ -115,6 +116,12 @@ class _CustomRouteGridScreenState extends State<CustomRouteGridScreen> {
             }
           }
           print('Selected Holds: $selectedHolds');
+          if (BoardConnect.thedevice?.isConnected ?? false) {
+            BoardConnect.thedevice?.servicesList.first.characteristics.first
+                .write(selectedHolds);
+          } else {
+            print("no device to write to, placeholder error");
+          }
         },
         backgroundColor: Colors.red[400],
         child: const Icon(Icons.check, color: Colors.white),
