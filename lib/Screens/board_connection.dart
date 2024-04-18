@@ -3,6 +3,7 @@ import 'package:mobileapp/platforms/sidemenu.dart';
 import 'package:mobileapp/Screens/route_creation.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'dart:async';
+import 'dart:developer';
 
 BluetoothDevice? thedevice;
 
@@ -18,19 +19,23 @@ class _BoardConnectState extends State<BoardConnect> {
   Widget build(BuildContext context) {
     final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
-    scandevice() async {
-      FlutterBluePlus.startScan();
-      FlutterBluePlus.scanResults.listen((results) {
-        if (results.last.advertisementData.serviceUuids.first.str ==
-            "5c5bfdde-78e6-40e8-a009-831a927be6cc") {
-          thedevice = results.last.device;
+    Future<void> scandevice() async {
+      await FlutterBluePlus.startScan();
+      var resultvar = FlutterBluePlus.scanResults.listen((results) {
+        debugPrint("device " + results.last.device.advName);
+        if (results.isNotEmpty) {
+          if (results.last.device.advName == "BellTest") {
+            thedevice = results.last.device;
+            debugPrint("successfully added " + (thedevice?.platformName)!);
+          }
         }
       });
     }
 
     connectdevice() async {
-      print("Attempting connect to " + (thedevice?.platformName)!);
-      thedevice?.connect(autoConnect: false, timeout: Duration(seconds: 25));
+      debugPrint("Attempting connect to " + (thedevice?.platformName)!);
+      await thedevice?.connect(
+          autoConnect: false, timeout: Duration(seconds: 25));
     }
 
     return Scaffold(
@@ -53,14 +58,18 @@ class _BoardConnectState extends State<BoardConnect> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 //ANDREW WORK HERE
+                //await FlutterBluePlus.turnOn();
+                debugPrint("on pressed enter");
                 if (thedevice == null) {
-                  scandevice();
-                  FlutterBluePlus.stopScan();
+                  debugPrint("scanning devices");
+                  await scandevice();
+                  //await FlutterBluePlus.stopScan();
                 }
                 if (thedevice != null) {
-                  connectdevice();
+                  debugPrint("connecting device");
+                  await connectdevice();
                 }
               },
               style: ElevatedButton.styleFrom(backgroundColor: Colors.red[400]),

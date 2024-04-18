@@ -1,5 +1,8 @@
+//import 'dart:html';
+
 import 'package:flutter/material.dart';
 import 'board_connection.dart';
+import 'dart:typed_data';
 
 class CustomRouteGridScreen extends StatefulWidget {
   @override
@@ -119,8 +122,9 @@ class _CustomRouteGridScreenState extends State<CustomRouteGridScreen> {
           }
           print('Selected Holds: $selectedHolds');
           if (thedevice?.isConnected ?? false) {
+            Uint8List bytearray = Uint8List.fromList(selectedHolds);
             thedevice?.servicesList.first.characteristics.first
-                .write(selectedHolds);
+                .write(bytearray);
           } else {
             print("no device to write to, placeholder error");
           }
