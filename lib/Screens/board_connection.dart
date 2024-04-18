@@ -20,22 +20,38 @@ class _BoardConnectState extends State<BoardConnect> {
     final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
     Future<void> scandevice() async {
-      await FlutterBluePlus.startScan();
-      var resultvar = FlutterBluePlus.scanResults.listen((results) {
-        debugPrint("device " + results.last.device.advName);
-        if (results.isNotEmpty) {
-          if (results.last.device.advName == "BellTest") {
-            thedevice = results.last.device;
-            debugPrint("successfully added " + (thedevice?.platformName)!);
+      try {
+        await FlutterBluePlus.startScan();
+        FlutterBluePlus.scanResults.listen((results) {
+          if (results.isNotEmpty) {
+            debugPrint("device " + results.last.device.advName);
+            if (results.last.device.advName == "BellTest") {
+              debugPrint("adding belltest looking like " +
+                  results.last.device.toString());
+              thedevice = results.last.device;
+              debugPrint("successfully added " + (thedevice?.platformName)!);
+              FlutterBluePlus
+                  .stopScan(); // Stop scanning after finding the device
+            }
           }
-        }
-      });
+        });
+      } catch (e) {
+        debugPrint("Error scanning devices: $e");
+      }
     }
 
-    connectdevice() async {
-      debugPrint("Attempting connect to " + (thedevice?.platformName)!);
-      await thedevice?.connect(
-          autoConnect: false, timeout: Duration(seconds: 25));
+    Future<void> connectdevice() async {
+      try {
+        if (thedevice != null) {
+          debugPrint("Attempting connect to " + (thedevice?.platformName)!);
+          await thedevice!.connect(autoConnect: false);
+          debugPrint("Connected to " + (thedevice?.platformName)!);
+        } else {
+          debugPrint("No device to connect to.");
+        }
+      } catch (e) {
+        debugPrint("Error connecting to device: $e");
+      }
     }
 
     return Scaffold(
@@ -61,6 +77,7 @@ class _BoardConnectState extends State<BoardConnect> {
               onPressed: () async {
                 //ANDREW WORK HERE
                 //await FlutterBluePlus.turnOn();
+
                 debugPrint("on pressed enter");
                 if (thedevice == null) {
                   debugPrint("scanning devices");

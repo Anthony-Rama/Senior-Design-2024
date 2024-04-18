@@ -1,6 +1,7 @@
 //import 'dart:html';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'board_connection.dart';
 import 'dart:typed_data';
 
@@ -100,7 +101,7 @@ class _CustomRouteGridScreenState extends State<CustomRouteGridScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
+        onPressed: () async {
           List<int> selectedHolds = [];
           for (int i = 0; i < gridState.length; i++) {
             for (int j = 0; j < gridState[i].length; j++) {
@@ -115,16 +116,25 @@ class _CustomRouteGridScreenState extends State<CustomRouteGridScreen> {
                       (gridState[i].length - 1 - j);
                 }
                 selectedHolds.add(index);
-                thedevice?.servicesList.first.characteristics.first
-                    .write(selectedHolds);
               }
             }
           }
           print('Selected Holds: $selectedHolds');
           if (thedevice?.isConnected ?? false) {
+            debugPrint(
+                "attempting write to " + (thedevice?.advName.toString())!);
+            debugPrint("and it looks like this " + thedevice!.toString());
             Uint8List bytearray = Uint8List.fromList(selectedHolds);
-            thedevice?.servicesList.first.characteristics.first
-                .write(bytearray);
+            List<BluetoothService> services =
+                await thedevice!.discoverServices();
+            for (BluetoothService service in services) {
+              print("report service " + service.uuid.toString());
+              if (service.uuid.toString() ==
+                  "5c5bfdde-78e6-40e8-a009-831a927be6cc") {
+                service.characteristics.first.write(bytearray);
+                print("done writing");
+              }
+            }
           } else {
             print("no device to write to, placeholder error");
           }
