@@ -112,6 +112,8 @@ class _CustomRouteGridScreenState extends State<CustomRouteGridScreen> {
                       (gridState[i].length - 1 - j);
                 }
                 selectedHolds.add(index);
+                thedevice?.servicesList.first.characteristics.first
+                    .write(selectedHolds);
               }
             }
           }
