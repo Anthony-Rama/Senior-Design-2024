@@ -133,6 +133,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         backgroundImage: NetworkImage(userData['profilePic']),
                       ),
                       Positioned(
+                        right: 0,
+                        bottom: 0,
                         child: IconButton(
                           icon: const Icon(Icons.add_a_photo),
                           onPressed: changeImage,
@@ -204,16 +206,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+// This method builds the grid view of posts using FutureBuilder
   Widget buildPostGrid() {
-    // FutureBuilder for fetching posts
     return FutureBuilder(
       future: FirebaseFirestore.instance
           .collection('posts')
-          .where('uid', isEqualTo: widget.uid)
+          .where('userId',
+              isEqualTo:
+                  widget.uid) // Change to the correct field name, if necessary
           .get(),
       builder: (context, snapshot) {
-        if (!snapshot.hasData) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
+        }
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          return const Center(child: Text('No posts found'));
+        }
+        if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
         }
         var docs = snapshot.data!.docs;
         return GridView.builder(
@@ -226,7 +236,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           itemCount: docs.length,
           itemBuilder: (context, index) {
-            return Image.network(docs[index]['postUrl'], fit: BoxFit.cover);
+            var doc = docs[index].data() as Map<String, dynamic>;
+            // Assuming 'imageUrl' is the field where the image URL is stored
+            String postImageUrl =
+                doc['imageUrl'] as String? ?? 'https://via.placeholder.com/150';
+            return Image.network(
+              postImageUrl,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return const Icon(Icons
+                    .error); // Shows an error icon if the image fails to load
+              },
+            );
           },
         );
       },
