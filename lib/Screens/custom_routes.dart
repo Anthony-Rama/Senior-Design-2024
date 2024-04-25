@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:mobileapp/Screens/route_display.dart';
 import 'package:mobileapp/platforms/sidemenu.dart';
 import 'package:mobileapp/Screens/route_creation.dart';
+import 'package:mobileapp/Screens/route_display.dart';
 
 class CustomRoutes extends StatefulWidget {
   const CustomRoutes({Key? key}) : super(key: key);
@@ -10,17 +13,38 @@ class CustomRoutes extends StatefulWidget {
 }
 
 class _CustomRoutesState extends State<CustomRoutes> {
-  List<Map<String, String>> customRoutes = [
-    {'routeName': 'Custom Route 1', 'date': '2024-02-10', 'time': '10:00'},
-    {'routeName': 'Custom Route 2', 'date': '2024-02-10', 'time': '12:30'},
-    // TODO: Implement the logic to fetch custom routes from Firebase
-  ];
+  late Future<List<Map<String, dynamic>>> _customRoutesFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _customRoutesFuture = _fetchCustomRoutes();
+  }
+
+  Future<List<Map<String, dynamic>>> _fetchCustomRoutes() async {
+    QuerySnapshot routeSnapshot =
+        await FirebaseFirestore.instance.collection('routes').get();
+
+    List<Map<String, dynamic>> customRoutes = [];
+
+    for (var doc in routeSnapshot.docs) {
+      String routeName = doc['routeName'];
+      String userId = doc['userId'];
+
+      DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
+      String username = userSnapshot['username'];
+
+      customRoutes.add({'routeName': routeName, 'username': username});
+    }
+
+    return customRoutes;
+  }
 
   @override
   Widget build(BuildContext context) {
-    List<String> routeNames =
-        customRoutes.map((route) => route['routeName'] ?? '').toList();
-
     final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
     return Scaffold(
@@ -49,18 +73,38 @@ class _CustomRoutesState extends State<CustomRoutes> {
         },
         backgroundColor: Colors.red[400],
         child: const Icon(Icons.add, color: Colors.white),
-      ),
+      ), //
       drawer: const sideMenu(),
-      body: ListView.builder(
-        itemCount: routeNames.length,
-        itemBuilder: (context, index) {
-          final routeName = routeNames[index];
-          return ListTile(
-            title: Text(routeName),
-            onTap: () {
-              // TODO: Implement logic to edit custom route when tapped
-            },
-          );
+      body: FutureBuilder<List<Map<String, dynamic>>>(
+        future: _customRoutesFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else {
+            return ListView.builder(
+              itemCount: snapshot.data!.length,
+              itemBuilder: (context, index) {
+                final routeName = snapshot.data![index]['routeName'];
+                final username = snapshot.data![index]['username'];
+                return ListTile(
+                  title: Text('$routeName by $username'),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DisplayRouteScreen(
+                          routeName: routeName,
+                          username: username,
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+            );
+          }
         },
       ),
     );

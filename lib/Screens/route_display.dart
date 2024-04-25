@@ -5,12 +5,21 @@ import 'dart:typed_data';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class CustomRouteGridScreen extends StatefulWidget {
+class DisplayRouteScreen extends StatefulWidget {
+  final String routeName;
+  final String username;
+
+  const DisplayRouteScreen({
+    required this.routeName,
+    required this.username,
+    Key? key,
+  }) : super(key: key);
+
   @override
-  _CustomRouteGridScreenState createState() => _CustomRouteGridScreenState();
+  _DisplayRouteScreenState createState() => _DisplayRouteScreenState();
 }
 
-class _CustomRouteGridScreenState extends State<CustomRouteGridScreen> {
+class _DisplayRouteScreenState extends State<DisplayRouteScreen> {
   List<List<bool>> gridState = List.generate(9, (_) => List.filled(5, false));
 
   // holds coordinates on the climbing board image relative to the image size
@@ -27,6 +36,40 @@ class _CustomRouteGridScreenState extends State<CustomRouteGridScreen> {
         return Offset(20 + j * 60, 20 + i * 40); // values can be adjusted here
       });
     });
+
+    _fetchHoldsFromFirebase();
+  }
+
+  Future<void> _fetchHoldsFromFirebase() async {
+    try {
+      DocumentSnapshot routeSnapshot = await FirebaseFirestore.instance
+          .collection('routes')
+          .where('routeName', isEqualTo: widget.routeName)
+          .limit(1)
+          .get()
+          .then((value) => value.docs.first);
+
+      List<int> holds = List<int>.from(routeSnapshot['holds']);
+
+      _updateGridState(holds);
+    } catch (e) {
+      print('Error fetching holds: $e');
+    }
+  }
+
+  void _updateGridState(List<int> holds) {
+    for (int i = 0; i < gridState.length; i++) {
+      for (int j = 0; j < gridState[i].length; j++) {
+        gridState[i][j] = false;
+      }
+    }
+
+    for (int holdIndex in holds) {
+      int rowIndex = 8 - (holdIndex ~/ 5);
+      int colIndex = holdIndex % 5;
+      gridState[rowIndex][colIndex] = true;
+    }
+    setState(() {});
   }
 
   @override
@@ -137,7 +180,7 @@ class _CustomRouteGridScreenState extends State<CustomRouteGridScreen> {
               onPressed: () async {
                 await saveRouteToFirestore(
                     _routeNameController.text, _getSelectedHolds());
-//BT code
+
                 List<int> selectedHolds = _getSelectedHolds();
                 if (thedevice?.isConnected ?? false) {
                   debugPrint("attempting write to " +
@@ -179,12 +222,11 @@ class _CustomRouteGridScreenState extends State<CustomRouteGridScreen> {
 
         DocumentSnapshot userSnapshot =
             await firestore.collection('users').doc(user.uid).get();
+
         Map<String, dynamic>? userData =
             userSnapshot.data() as Map<String, dynamic>?;
-
         String? username = userData?['username'];
 
-        // route model
         Map<String, dynamic> routeData = {
           'userId': user.uid,
           'username': username,
@@ -221,7 +263,6 @@ class _CustomRouteGridScreenState extends State<CustomRouteGridScreen> {
         }
       }
     }
-    print('Selected Holds: $selectedHolds');
     return selectedHolds;
   }
 }
