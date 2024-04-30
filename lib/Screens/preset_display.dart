@@ -2,6 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // Import FirebaseAuth
 import 'package:mobileapp/Screens/preset.dart';
+import 'board_connection.dart';
+import 'dart:typed_data';
+import 'package:flutter/material.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'board_connection.dart';
+import 'dart:typed_data';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PresetDisplayScreen extends StatefulWidget {
   final PresetRoute route;
@@ -37,6 +45,31 @@ class _PresetDisplayScreenState extends State<PresetDisplayScreen> {
       gridState[rowIndex][colIndex] = true;
     }
     setState(() {});
+  }
+
+  Future<void> sendHoldsViaBluetooth(List<int> holds) async {
+    try {
+      BluetoothDevice? thedevice; // Define your Bluetooth device here
+
+      if (thedevice?.isConnected ?? false) {
+        debugPrint("attempting write to " + (thedevice?.advName.toString())!);
+        debugPrint("and it looks like this " + thedevice!.toString());
+        Uint8List bytearray = Uint8List.fromList(holds);
+        List<BluetoothService> services = await thedevice!.discoverServices();
+        for (BluetoothService service in services) {
+          print("report service " + service.uuid.toString());
+          if (service.uuid.toString() ==
+              "5c5bfdde-78e6-40e8-a009-831a927be6cc") {
+            await service.characteristics.first.write(bytearray);
+            print("done writing");
+          }
+        }
+      } else {
+        print("no device to write to, placeholder error");
+      }
+    } catch (error) {
+      print("Error sending data via Bluetooth: $error");
+    }
   }
 
   Future<void> _updateCompletedRoutes() async {
@@ -104,6 +137,7 @@ class _PresetDisplayScreenState extends State<PresetDisplayScreen> {
             width: 40,
             child: FloatingActionButton(
               onPressed: () {
+                sendHoldsViaBluetooth(widget.route.holds);
                 // Add your action for the right button
               },
               mini: true,

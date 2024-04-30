@@ -96,8 +96,12 @@ class DropdownTile extends StatelessWidget {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ElevatedButton(
-                  onPressed: () {
+                ListTile(
+                  title: Text(
+                    fieldName,
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -112,8 +116,9 @@ class DropdownTile extends StatelessWidget {
                       ),
                     );
                   },
-                  child: Text(fieldName),
+                  //child: Text(fieldName),
                 ),
+                Divider(),
               ],
             );
           },
