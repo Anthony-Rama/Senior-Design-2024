@@ -18,6 +18,7 @@ class _MyAppState extends State<LoginScreen> {
   String? _errorMessage;
   String? _emailError;
   String? _passwordError;
+  bool _isPasswordHidden = true;
 
   @override
   Widget build(BuildContext context) {
@@ -79,11 +80,26 @@ class _MyAppState extends State<LoginScreen> {
                         child: TextFormField(
                           controller: _passwordController,
                           keyboardType: TextInputType.visiblePassword,
+                          obscureText: _isPasswordHidden,
                           decoration: InputDecoration(
                             hintText: 'Enter password',
                             prefixIcon: const Icon(Icons.lock),
+                            //border: OutlineInputBorder(
+                              //borderRadius: BorderRadius.circular(20.0),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _isPasswordHidden
+                                  ? Icons.visibility_off : Icons.visibility
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                   _isPasswordHidden = !_isPasswordHidden;
+                                });
+                              }
+                            ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(20.0),
+                            
                             ),
                             errorText: _passwordError,
                           ),
@@ -198,7 +214,8 @@ class _MyAppState extends State<LoginScreen> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => const ResetEmailScreen()));
+                                    builder: (context) =>
+                                        const ResetEmailScreen()));
                           },
                           child: Text('Reset Email',
                               style: TextStyle(

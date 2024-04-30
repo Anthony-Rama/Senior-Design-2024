@@ -113,6 +113,7 @@ class _PresetDisplayScreenState extends State<PresetDisplayScreen> {
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Colors.red[400],
+        iconTheme: IconThemeData(color: Colors.white),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -129,7 +130,8 @@ class _PresetDisplayScreenState extends State<PresetDisplayScreen> {
                 _updateCompletedRoutes();
               },
               mini: true,
-              child: Icon(Icons.check),
+              backgroundColor: Colors.red[400],
+              child: Icon(Icons.check, color: Colors.white),
             ),
           ),
           SizedBox(width: 16), // Add some space between the buttons
@@ -141,7 +143,8 @@ class _PresetDisplayScreenState extends State<PresetDisplayScreen> {
                 // Add your action for the right button
               },
               mini: true,
-              child: Icon(Icons.arrow_forward),
+              backgroundColor: Colors.red[400],
+              child: Icon(Icons.arrow_forward, color: Colors.white),
             ),
           ),
         ],

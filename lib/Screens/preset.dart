@@ -118,7 +118,7 @@ class DropdownTile extends StatelessWidget {
                   },
                   //child: Text(fieldName),
                 ),
-                Divider(),
+                //Divider(),
               ],
             );
           },

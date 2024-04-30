@@ -36,10 +36,11 @@ class _CustomRouteGridScreenState extends State<CustomRouteGridScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Create Custom Route',
+          'CREATE CUSTOM ROUTE',
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Colors.red[400],
+        iconTheme: IconThemeData(color: Colors.white),
       ),
       body: Center(
         child: SingleChildScrollView(
