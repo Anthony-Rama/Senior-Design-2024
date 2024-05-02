@@ -43,11 +43,11 @@ class PresetScreen extends StatelessWidget {
         future: fetchPresetDocuments(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No preset routes available.'));
+            return const Center(child: Text('No preset routes available.'));
           } else {
             return ListView.builder(
               itemCount: snapshot.data!.length,
@@ -78,7 +78,7 @@ class PresetScreen extends StatelessWidget {
 class DropdownTile extends StatelessWidget {
   final DocumentSnapshot document;
 
-  const DropdownTile({Key? key, required this.document}) : super(key: key);
+  const DropdownTile({super.key, required this.document});
 
   @override
   Widget build(BuildContext context) {
@@ -99,7 +99,7 @@ class DropdownTile extends StatelessWidget {
                 ListTile(
                   title: Text(
                     fieldName,
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   onTap: () {
                     Navigator.push(

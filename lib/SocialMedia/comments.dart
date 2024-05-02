@@ -37,7 +37,7 @@ class Comment {
 class AddCommentScreen extends StatefulWidget {
   final String postId;
 
-  const AddCommentScreen({Key? key, required this.postId}) : super(key: key);
+  const AddCommentScreen({super.key, required this.postId});
 
   @override
   _AddCommentScreenState createState() => _AddCommentScreenState();
@@ -114,7 +114,7 @@ class _AddCommentScreenState extends State<AddCommentScreen> {
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Comment added'),
             backgroundColor: Colors.green,
           ),
@@ -122,7 +122,7 @@ class _AddCommentScreenState extends State<AddCommentScreen> {
       } catch (e) {
         print('Error adding comment: $e');
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Failed to add comment. Please try again.'),
             backgroundColor: Colors.red,
           ),
@@ -151,7 +151,7 @@ class _AddCommentScreenState extends State<AddCommentScreen> {
                   .snapshots(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
-                  return Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 }
 
                 Map<String, dynamic> userData =
