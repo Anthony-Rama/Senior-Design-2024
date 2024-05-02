@@ -110,9 +110,67 @@ class _PresetDisplayScreenState extends State<PresetDisplayScreen> {
         backgroundColor: Colors.red[400],
         iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: _buildGridSystem(),
+      body: Center(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: size.width * 1.8, // image width
+                height: size.width * 1.8, // image height
+                child: Stack(
+                  children: [
+                    Image.asset(
+                      'assets/climbing_board.jpeg',
+                      fit: BoxFit.cover,
+                    ),
+                    Positioned.fill(
+                      child: Transform.translate(
+                        offset: const Offset(3.0, 28.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: List.generate(
+                            gridState.length,
+                            (rowIndex) => Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: List.generate(
+                                gridState[rowIndex].length,
+                                (colIndex) => GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      gridState[rowIndex][colIndex] =
+                                          !gridState[rowIndex][colIndex];
+                                    });
+                                  },
+                                  child: Container(
+                                    // adjust hold size
+                                    width: size.width * 0.09,
+                                    height: size.width * 0.09,
+                                    margin: const EdgeInsets.symmetric(
+                                      // adjust space between rows and columns
+                                      horizontal: 22.6,
+                                      vertical: 11.5,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: gridState[rowIndex][colIndex]
+                                          ? Colors.blue
+                                          : Colors.transparent,
+                                      border: Border.all(color: Colors.white),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
       floatingActionButton: Row(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -140,61 +198,6 @@ class _PresetDisplayScreenState extends State<PresetDisplayScreen> {
               mini: true,
               backgroundColor: Colors.red[400],
               child: Icon(Icons.arrow_forward, color: Colors.white),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildGridSystem() {
-    final size = MediaQuery.of(context).size;
-    return SizedBox(
-      width: size.width * 1.8, // image width
-      height: size.width * 1.8, // image height
-      child: Stack(
-        children: [
-          Image.asset(
-            'assets/climbing_board.jpeg', // Change this to the appropriate image for preset routes
-            fit: BoxFit.cover,
-          ),
-          Positioned.fill(
-            child: Transform.translate(
-              offset: Offset(3.0, 28.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: List.generate(
-                  gridState.length,
-                  (rowIndex) => Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(
-                      gridState[rowIndex].length,
-                      (colIndex) => GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            gridState[rowIndex][colIndex] =
-                                !gridState[rowIndex][colIndex];
-                          });
-                        },
-                        child: Container(
-                          width: size.width * 0.09,
-                          height: size.width * 0.09,
-                          margin: const EdgeInsets.symmetric(
-                            horizontal: 22.6,
-                            vertical: 11.5,
-                          ),
-                          decoration: BoxDecoration(
-                            color: gridState[rowIndex][colIndex]
-                                ? Colors.blue
-                                : Colors.transparent,
-                            border: Border.all(color: Colors.white),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
             ),
           ),
         ],
