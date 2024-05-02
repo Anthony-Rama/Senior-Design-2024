@@ -2,19 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // Import FirebaseAuth
 import 'package:mobileapp/Screens/preset.dart';
-import 'board_connection.dart';
 import 'dart:typed_data';
-import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'board_connection.dart';
-import 'dart:typed_data';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PresetDisplayScreen extends StatefulWidget {
   final PresetRoute route;
 
-  const PresetDisplayScreen({Key? key, required this.route}) : super(key: key);
+  const PresetDisplayScreen({super.key, required this.route});
 
   @override
   _PresetDisplayScreenState createState() => _PresetDisplayScreenState();
@@ -52,12 +46,12 @@ class _PresetDisplayScreenState extends State<PresetDisplayScreen> {
       BluetoothDevice? thedevice; // Define your Bluetooth device here
 
       if (thedevice?.isConnected ?? false) {
-        debugPrint("attempting write to " + (thedevice?.advName.toString())!);
-        debugPrint("and it looks like this " + thedevice!.toString());
+        debugPrint("attempting write to ${(thedevice?.advName.toString())!}");
+        debugPrint("and it looks like this ${thedevice!}");
         Uint8List bytearray = Uint8List.fromList(holds);
-        List<BluetoothService> services = await thedevice!.discoverServices();
+        List<BluetoothService> services = await thedevice.discoverServices();
         for (BluetoothService service in services) {
-          print("report service " + service.uuid.toString());
+          print("report service ${service.uuid}");
           if (service.uuid.toString() ==
               "5c5bfdde-78e6-40e8-a009-831a927be6cc") {
             await service.characteristics.first.write(bytearray);
@@ -87,7 +81,7 @@ class _PresetDisplayScreenState extends State<PresetDisplayScreen> {
         final userSnapshot = await userDoc.get();
         int completedRoutes = 1;
         if (userSnapshot.exists) {
-          final userData = userSnapshot.data() as Map<String, dynamic>?;
+          final userData = userSnapshot.data();
           if (userData != null && userData.containsKey('completedRoutes')) {
             completedRoutes = userData['completedRoutes'] + 1;
           }
@@ -108,12 +102,12 @@ class _PresetDisplayScreenState extends State<PresetDisplayScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'ROUTE PREVIEW',
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Colors.red[400],
-        iconTheme: IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -131,10 +125,10 @@ class _PresetDisplayScreenState extends State<PresetDisplayScreen> {
               },
               mini: true,
               backgroundColor: Colors.red[400],
-              child: Icon(Icons.check, color: Colors.white),
+              child: const Icon(Icons.check, color: Colors.white),
             ),
           ),
-          SizedBox(width: 16), // Add some space between the buttons
+          const SizedBox(width: 16), // Add some space between the buttons
           SizedBox(
             width: 40,
             child: FloatingActionButton(
@@ -144,7 +138,7 @@ class _PresetDisplayScreenState extends State<PresetDisplayScreen> {
               },
               mini: true,
               backgroundColor: Colors.red[400],
-              child: Icon(Icons.arrow_forward, color: Colors.white),
+              child: const Icon(Icons.arrow_forward, color: Colors.white),
             ),
           ),
         ],
@@ -165,7 +159,7 @@ class _PresetDisplayScreenState extends State<PresetDisplayScreen> {
           ),
           Positioned.fill(
             child: Transform.translate(
-              offset: Offset(3.0, 28.0),
+              offset: const Offset(3.0, 28.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: List.generate(

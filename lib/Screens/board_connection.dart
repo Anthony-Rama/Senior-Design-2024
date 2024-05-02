@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:mobileapp/platforms/sidemenu.dart';
-import 'package:mobileapp/Screens/route_creation.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'dart:async';
-import 'dart:developer';
 
 BluetoothDevice? thedevice;
 
 class BoardConnect extends StatefulWidget {
-  const BoardConnect({Key? key}) : super(key: key);
+  const BoardConnect({super.key});
 
   @override
   _BoardConnectState createState() => _BoardConnectState();
@@ -24,12 +22,11 @@ class _BoardConnectState extends State<BoardConnect> {
         await FlutterBluePlus.startScan();
         FlutterBluePlus.scanResults.listen((results) {
           if (results.isNotEmpty) {
-            debugPrint("device " + results.last.device.advName);
+            debugPrint("device ${results.last.device.advName}");
             if (results.last.device.advName == "BellTest") {
-              debugPrint("adding belltest looking like " +
-                  results.last.device.toString());
+              debugPrint("adding belltest looking like ${results.last.device}");
               thedevice = results.last.device;
-              debugPrint("successfully added " + (thedevice?.platformName)!);
+              debugPrint("successfully added ${(thedevice?.platformName)!}");
               FlutterBluePlus
                   .stopScan(); // Stop scanning after finding the device
             }
@@ -43,9 +40,9 @@ class _BoardConnectState extends State<BoardConnect> {
     Future<void> connectdevice() async {
       try {
         if (thedevice != null) {
-          debugPrint("Attempting connect to " + (thedevice?.platformName)!);
+          debugPrint("Attempting connect to ${(thedevice?.platformName)!}");
           await thedevice!.connect(autoConnect: false);
-          debugPrint("Connected to " + (thedevice?.platformName)!);
+          debugPrint("Connected to ${(thedevice?.platformName)!}");
         } else {
           debugPrint("No device to connect to.");
         }

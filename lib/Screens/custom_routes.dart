@@ -3,10 +3,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mobileapp/Screens/route_display.dart';
 import 'package:mobileapp/platforms/sidemenu.dart';
 import 'package:mobileapp/Screens/route_creation.dart';
-import 'package:mobileapp/Screens/route_display.dart';
 
 class CustomRoutes extends StatefulWidget {
-  const CustomRoutes({Key? key}) : super(key: key);
+  const CustomRoutes({super.key});
 
   @override
   _CustomRoutesState createState() => _CustomRoutesState();
@@ -67,7 +66,7 @@ class _CustomRoutesState extends State<CustomRoutes> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => CustomRouteGridScreen(),
+              builder: (context) => const CustomRouteGridScreen(),
             ),
           );
         },
@@ -79,7 +78,7 @@ class _CustomRoutesState extends State<CustomRoutes> {
         future: _customRoutesFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else {

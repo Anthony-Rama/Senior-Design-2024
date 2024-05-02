@@ -6,7 +6,7 @@ import 'package:mobileapp/SocialMedia/profile_screen.dart';
 import 'package:mobileapp/SocialMedia/search_screen.dart';
 
 class MobileScreenLayout extends StatefulWidget {
-  const MobileScreenLayout({Key? key}) : super(key: key);
+  const MobileScreenLayout({super.key});
 
   @override
   State<MobileScreenLayout> createState() => _MobileScreenLayoutState();
@@ -51,9 +51,9 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
       body: PageView(
         controller: pageController,
         onPageChanged: onPageChanged,
-        physics: NeverScrollableScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         children: [
-          FeedScreen(),
+          const FeedScreen(),
           const SearchScreen(),
           Container(),
           const Center(child: Text('Notifs')),

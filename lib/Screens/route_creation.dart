@@ -6,6 +6,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CustomRouteGridScreen extends StatefulWidget {
+  const CustomRouteGridScreen({super.key});
+
   @override
   _CustomRouteGridScreenState createState() => _CustomRouteGridScreenState();
 }
@@ -17,7 +19,7 @@ class _CustomRouteGridScreenState extends State<CustomRouteGridScreen> {
   List<List<Offset>> holdCoordinates =
       List.generate(9, (_) => List.filled(5, Offset.zero));
 
-  TextEditingController _routeNameController = TextEditingController();
+  final TextEditingController _routeNameController = TextEditingController();
 
   @override
   void initState() {
@@ -40,7 +42,7 @@ class _CustomRouteGridScreenState extends State<CustomRouteGridScreen> {
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Colors.red[400],
-        iconTheme: IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -58,7 +60,7 @@ class _CustomRouteGridScreenState extends State<CustomRouteGridScreen> {
                     ),
                     Positioned.fill(
                       child: Transform.translate(
-                        offset: Offset(3.0, 28.0),
+                        offset: const Offset(3.0, 28.0),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: List.generate(
@@ -119,10 +121,10 @@ class _CustomRouteGridScreenState extends State<CustomRouteGridScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Name Your Route'),
+          title: const Text('Name Your Route'),
           content: TextFormField(
             controller: _routeNameController,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               labelText: 'Route Name',
               hintText: 'Enter a name for your route',
             ),
@@ -132,7 +134,7 @@ class _CustomRouteGridScreenState extends State<CustomRouteGridScreen> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('CANCEL'),
+              child: const Text('CANCEL'),
             ),
             ElevatedButton(
               onPressed: () async {
@@ -141,14 +143,13 @@ class _CustomRouteGridScreenState extends State<CustomRouteGridScreen> {
 //BT code
                 List<int> selectedHolds = _getSelectedHolds();
                 if (thedevice?.isConnected ?? false) {
-                  debugPrint("attempting write to " +
-                      (thedevice?.advName.toString())!);
-                  debugPrint("and it looks like this " + thedevice!.toString());
+                  debugPrint("attempting write to ${(thedevice?.advName.toString())!}");
+                  debugPrint("and it looks like this ${thedevice!}");
                   Uint8List bytearray = Uint8List.fromList(selectedHolds);
                   List<BluetoothService> services =
                       await thedevice!.discoverServices();
                   for (BluetoothService service in services) {
-                    print("report service " + service.uuid.toString());
+                    print("report service ${service.uuid}");
                     if (service.uuid.toString() ==
                         "5c5bfdde-78e6-40e8-a009-831a927be6cc") {
                       service.characteristics.first.write(bytearray);
@@ -161,7 +162,7 @@ class _CustomRouteGridScreenState extends State<CustomRouteGridScreen> {
 
                 Navigator.of(context).pop();
               },
-              child: Text('SAVE'),
+              child: const Text('SAVE'),
             ),
           ],
         );
