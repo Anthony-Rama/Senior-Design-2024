@@ -123,28 +123,29 @@ class _PresetDisplayScreenState extends State<PresetDisplayScreen> {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           SizedBox(
-            width: 40,
+            width: 100,
             child: FloatingActionButton(
               onPressed: () {
                 // Add your action for the left button
                 _updateCompletedRoutes();
               },
-              mini: true,
+              //mini: true,
               backgroundColor: Colors.red[400],
-              child: Icon(Icons.check, color: Colors.white),
+              child: Text("COMPLETED", style: TextStyle(color: Colors.white)),
             ),
           ),
           SizedBox(width: 16), // Add some space between the buttons
           SizedBox(
-            width: 40,
+            width: 60,
             child: FloatingActionButton(
               onPressed: () {
                 sendHoldsViaBluetooth(widget.route.holds);
                 // Add your action for the right button
               },
-              mini: true,
+              //mini: true,
+              shape: RoundedRectangleBorder( borderRadius: BorderRadius.circular(15),),
               backgroundColor: Colors.red[400],
-              child: Icon(Icons.arrow_forward, color: Colors.white),
+              child: Text("SEND", style: TextStyle(color: Colors.white),),
             ),
           ),
         ],
