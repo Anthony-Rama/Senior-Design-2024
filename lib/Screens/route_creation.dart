@@ -106,12 +106,25 @@ class _CustomRouteGridScreenState extends State<CustomRouteGridScreen> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          await _showNameRouteDialog();
-        },
-        backgroundColor: Colors.red[400],
-        child: const Icon(Icons.check, color: Colors.white),
+      floatingActionButton: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            onPressed: () async {
+              await _showNameRouteDialog();
+            },
+            backgroundColor: Colors.red[400],
+            child: const Icon(Icons.save, color: Colors.white),
+          ),
+          const SizedBox(width: 16),
+          FloatingActionButton(
+            onPressed: () async {
+              await _sendRouteToBluetooth();
+            },
+            backgroundColor: Colors.red[400],
+            child: const Icon(Icons.bluetooth, color: Colors.white),
+          ),
+        ],
       ),
     );
   }
@@ -138,29 +151,9 @@ class _CustomRouteGridScreenState extends State<CustomRouteGridScreen> {
             ),
             ElevatedButton(
               onPressed: () async {
+                Navigator.of(context).pop();
                 await saveRouteToFirestore(
                     _routeNameController.text, _getSelectedHolds());
-//BT code
-                List<int> selectedHolds = _getSelectedHolds();
-                if (thedevice?.isConnected ?? false) {
-                  debugPrint("attempting write to ${(thedevice?.advName.toString())!}");
-                  debugPrint("and it looks like this ${thedevice!}");
-                  Uint8List bytearray = Uint8List.fromList(selectedHolds);
-                  List<BluetoothService> services =
-                      await thedevice!.discoverServices();
-                  for (BluetoothService service in services) {
-                    print("report service ${service.uuid}");
-                    if (service.uuid.toString() ==
-                        "5c5bfdde-78e6-40e8-a009-831a927be6cc") {
-                      service.characteristics.first.write(bytearray);
-                      print("done writing");
-                    }
-                  }
-                } else {
-                  print("no device to write to, placeholder error");
-                }
-
-                Navigator.of(context).pop();
               },
               child: const Text('SAVE'),
             ),
@@ -168,6 +161,27 @@ class _CustomRouteGridScreenState extends State<CustomRouteGridScreen> {
         );
       },
     );
+  }
+
+  Future<void> _sendRouteToBluetooth() async {
+    List<int> selectedHolds = _getSelectedHolds();
+    // Assuming you have an instance of FlutterBlue
+    // and thedevice variable correctly set up
+    if (thedevice?.isConnected ?? false) {
+      debugPrint("attempting write to ${(thedevice?.advName.toString())!}");
+      debugPrint("and it looks like this ${thedevice!}");
+      Uint8List bytearray = Uint8List.fromList(selectedHolds);
+      List<BluetoothService> services = await thedevice!.discoverServices();
+      for (BluetoothService service in services) {
+        print("report service ${service.uuid}");
+        if (service.uuid.toString() == "5c5bfdde-78e6-40e8-a009-831a927be6cc") {
+          service.characteristics.first.write(bytearray);
+          print("done writing");
+        }
+      }
+    } else {
+      print("no device to write to, placeholder error");
+    }
   }
 
   Future<void> saveRouteToFirestore(

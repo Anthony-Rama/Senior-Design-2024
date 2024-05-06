@@ -147,101 +147,104 @@ class _DisplayRouteScreenState extends State<DisplayRouteScreen> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          await _showNameRouteDialog();
-        },
-        backgroundColor: Colors.red[400],
-        child: const Icon(Icons.check, color: Colors.white),
+      floatingActionButton: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          SizedBox(
+            width: 100,
+            child: FloatingActionButton(
+              onPressed: () {
+                _updateCompletedRoutes();
+                _updateCompletedRouteNames(widget.routeName);
+              },
+              backgroundColor: Colors.red[400],
+              child: Text("COMPLETED", style: TextStyle(color: Colors.white)),
+            ),
+          ),
+          SizedBox(width: 16),
+          SizedBox(
+            width: 100,
+            child: FloatingActionButton(
+              onPressed: () async {
+                await _sendRouteToBluetooth();
+              },
+              backgroundColor: Colors.red[400],
+              child: const Icon(Icons.bluetooth, color: Colors.white),
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Future<void> _showNameRouteDialog() async {
-    return showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Name Your Route'),
-          content: TextFormField(
-            controller: _routeNameController,
-            decoration: const InputDecoration(
-              labelText: 'Route Name',
-              hintText: 'Enter a name for your route',
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('CANCEL'),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                await saveRouteToFirestore(
-                    _routeNameController.text, _getSelectedHolds());
-
-                List<int> selectedHolds = _getSelectedHolds();
-                if (thedevice?.isConnected ?? false) {
-                  debugPrint("attempting write to ${(thedevice?.advName.toString())!}");
-                  debugPrint("and it looks like this ${thedevice!}");
-                  Uint8List bytearray = Uint8List.fromList(selectedHolds);
-                  List<BluetoothService> services =
-                      await thedevice!.discoverServices();
-                  for (BluetoothService service in services) {
-                    print("report service ${service.uuid}");
-                    if (service.uuid.toString() ==
-                        "5c5bfdde-78e6-40e8-a009-831a927be6cc") {
-                      service.characteristics.first.write(bytearray);
-                      print("done writing");
-                    }
-                  }
-                } else {
-                  print("no device to write to, placeholder error");
-                }
-
-                Navigator.of(context).pop();
-              },
-              child: const Text('SAVE'),
-            ),
-          ],
-        );
-      },
-    );
+  Future<void> _sendRouteToBluetooth() async {
+    List<int> selectedHolds = _getSelectedHolds();
+    if (thedevice?.isConnected ?? false) {
+      debugPrint("attempting write to ${(thedevice?.advName.toString())!}");
+      debugPrint("and it looks like this ${thedevice!}");
+      Uint8List bytearray = Uint8List.fromList(selectedHolds);
+      List<BluetoothService> services = await thedevice!.discoverServices();
+      for (BluetoothService service in services) {
+        print("report service ${service.uuid}");
+        if (service.uuid.toString() == "5c5bfdde-78e6-40e8-a009-831a927be6cc") {
+          service.characteristics.first.write(bytearray);
+          print("done writing");
+        }
+      }
+    } else {
+      print("no device to write to, placeholder error");
+    }
   }
 
-  Future<void> saveRouteToFirestore(
-      String routeName, List<int> selectedHolds) async {
+  Future<void> _updateCompletedRoutes() async {
     try {
-      User? user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        FirebaseFirestore firestore = FirebaseFirestore.instance;
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser != null) {
+        final currentUserID = currentUser.uid;
 
-        String routeId = firestore.collection('routes').doc().id;
+        final userDoc = FirebaseFirestore.instance
+            .collection('completedroutes')
+            .doc(currentUserID);
 
-        DocumentSnapshot userSnapshot =
-            await firestore.collection('users').doc(user.uid).get();
+        final userSnapshot = await userDoc.get();
+        int completedRoutes = 1;
+        if (userSnapshot.exists) {
+          final userData = userSnapshot.data();
+          if (userData != null && userData.containsKey('completedRoutes')) {
+            completedRoutes = userData['completedRoutes'] + 1;
+          }
+        }
 
-        Map<String, dynamic>? userData =
-            userSnapshot.data() as Map<String, dynamic>?;
-        String? username = userData?['username'];
-
-        Map<String, dynamic> routeData = {
-          'userId': user.uid,
-          'username': username,
-          'routeName': routeName,
-          'holds': selectedHolds,
-        };
-
-        await firestore.collection('routes').doc(routeId).set(routeData);
-
-        print('Route saved to Firestore with ID: $routeId');
+        await userDoc
+            .set({'completedRoutes': completedRoutes}, SetOptions(merge: true));
       } else {
-        print('User is not authenticated.');
+        print('User not authenticated.');
       }
-    } catch (e) {
-      print('Error saving route: $e');
+    } catch (error) {
+      print('Error updating completedRoutes: $error');
+    }
+  }
+
+  Future<void> _updateCompletedRouteNames(String routeName) async {
+    try {
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser != null) {
+        final currentUserID = currentUser.uid;
+
+        final routeDoc = FirebaseFirestore.instance
+            .collection('completedroutes')
+            .doc(currentUserID);
+
+        await routeDoc.update({
+          'completedRouteNames': FieldValue.arrayUnion([routeName])
+        });
+
+        print('Route name added to completedRouteNames list.');
+      } else {
+        print('User not authenticated.');
+      }
+    } catch (error) {
+      print('Error updating completedRouteNames: $error');
     }
   }
 
