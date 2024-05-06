@@ -41,6 +41,32 @@ class _PresetDisplayScreenState extends State<PresetDisplayScreen> {
     setState(() {});
   }
 
+  Future<void> _updateCompletedRouteNames(String routeName) async {
+    try {
+      // Get current user's ID using FirebaseAuth
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser != null) {
+        final currentUserID = currentUser.uid;
+
+        // Retrieve user document from Firestore
+        final routeDoc = FirebaseFirestore.instance
+            .collection('completedroutes')
+            .doc(currentUserID);
+
+        // Add routeName to completedRouteNames list
+        await routeDoc.update({
+          'completedRouteNames': FieldValue.arrayUnion([routeName])
+        });
+
+        print('Route name added to completedRouteNames list.');
+      } else {
+        print('User not authenticated.');
+      }
+    } catch (error) {
+      print('Error updating completedRouteNames: $error');
+    }
+  }
+
   Future<void> sendHoldsViaBluetooth(List<int> holds) async {
     try {
       BluetoothDevice? thedevice; // Define your Bluetooth device here
@@ -74,8 +100,9 @@ class _PresetDisplayScreenState extends State<PresetDisplayScreen> {
         final currentUserID = currentUser.uid;
 
         // Retrieve user document from Firestore
-        final userDoc =
-            FirebaseFirestore.instance.collection('users').doc(currentUserID);
+        final userDoc = FirebaseFirestore.instance
+            .collection('completedroutes')
+            .doc(currentUserID);
 
         // Check if completedRoutes field exists
         final userSnapshot = await userDoc.get();
@@ -176,28 +203,29 @@ class _PresetDisplayScreenState extends State<PresetDisplayScreen> {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           SizedBox(
-            width: 40,
+            width: 100,
             child: FloatingActionButton(
               onPressed: () {
                 // Add your action for the left button
                 _updateCompletedRoutes();
+                _updateCompletedRouteNames(widget.route.name);
               },
-              mini: true,
+              //mini: true,
               backgroundColor: Colors.red[400],
-              child: Icon(Icons.check, color: Colors.white),
+              child: Text("COMPLETED", style: TextStyle(color: Colors.white)),
             ),
           ),
           SizedBox(width: 16), // Add some space between the buttons
           SizedBox(
-            width: 40,
+            width: 100,
             child: FloatingActionButton(
               onPressed: () {
                 sendHoldsViaBluetooth(widget.route.holds);
                 // Add your action for the right button
               },
-              mini: true,
+              //mini: true,
               backgroundColor: Colors.red[400],
-              child: Icon(Icons.arrow_forward, color: Colors.white),
+              child: Text("SEND", style: TextStyle(color: Colors.white)),
             ),
           ),
         ],

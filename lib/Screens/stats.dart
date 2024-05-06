@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobileapp/platforms/sidemenu.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Stats extends StatefulWidget {
   const Stats({super.key});
@@ -9,11 +11,53 @@ class Stats extends StatefulWidget {
 }
 
 class _StatsState extends State<Stats> {
-  List<Map<String, String>> completedRoutes = [
-    {'routeName': 'Route 1', 'date': '2024-02-10', 'time': '10 min'},
-    {'routeName': 'Route 2', 'date': '2024-02-10', 'time': '20 min'},
-    //TODO: Implement the logic to fetch completed routes from Firebase
-  ];
+  List<Map<String, String>> completedRouteNames = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchCompletedRoutes();
+  }
+
+  Future<void> _fetchCompletedRoutes() async {
+    try {
+      // Get current user's ID using FirebaseAuth
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser != null) {
+        final currentUserID = currentUser.uid;
+
+        // Retrieve completed routes for the current user from Firestore
+        final querySnapshot = await FirebaseFirestore.instance
+            .collection('completedroutes')
+            .doc(currentUserID)
+            .get();
+
+        // Check if the document exists
+        if (querySnapshot.exists) {
+          final data = querySnapshot.data();
+          if (data != null && data.containsKey('completedRouteNames')) {
+            //final List<dynamic> routeNamesData = data['completedRouteNames'];
+            // Convert each route to a Map<String, String> and add it to completedRoutes
+            //routes.forEach((route) {
+              //final routeData = route as Map<String, dynamic>;
+              //final routeName = routeData['routeName'] ?? '';
+              //final date = routeData['date'] ?? '';
+              //final time = routeData['time'] ?? '';
+              //completedRoutes.add({'routeName': routeName});
+              final routeNames = List<String>.from(data['completedRouteNames']);
+               completedRouteNames =
+                routeNames.map((routeName) => {'routeName': routeName}).toList();
+            //});
+          }
+        }
+      } else {
+        print('User not authenticated.');
+      }
+      setState(() {});
+    } catch (error) {
+      print('Error fetching completed routes: $error');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,13 +78,24 @@ class _StatsState extends State<Stats> {
           },
         ),
       ),
-      body: ListView.builder(
-        itemCount: completedRoutes.length + 1,
+      body: completedRouteNames.isEmpty
+        ? Center(
+            child: Text(
+              'No completed routes found.',
+              style: TextStyle(fontSize: 18.0),
+            ),
+          )
+      
+      :ListView.builder(
+        itemCount: completedRouteNames.length,
         itemBuilder: (context, index) {
-          if (index == 0) {
-            return ListTile(
-              title: Row(
-                children: [
+          //if (index == 0) {
+          final routeName = completedRouteNames[index];
+          return ListTile(
+            title: Text(
+              routeName['routeName']!,
+              style: TextStyle(color: Colors.black),
+              /* children: [
                   Expanded(
                     child: Container(
                       decoration: BoxDecoration(
@@ -55,7 +110,7 @@ class _StatsState extends State<Stats> {
                     ),
                   ),
                   const SizedBox(width: 10),
-                  Expanded(
+                 /* Expanded(
                     child: Container(
                       decoration: BoxDecoration(
                         color: Colors.red[400],
@@ -81,7 +136,7 @@ class _StatsState extends State<Stats> {
                         style: TextStyle(color: Colors.white),
                       ),
                     ),
-                  ),
+                  ),*/
                 ],
               ),
             );
@@ -130,11 +185,11 @@ class _StatsState extends State<Stats> {
                         style: const TextStyle(color: Colors.black),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            );
-          }
+                  ),*/
+              //],
+            ),
+          );
+          //}
         },
       ),
       drawer: const sideMenu(),
