@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'board_connection.dart';
+import 'package:http/http.dart';
+import 'board_connection.dart' show thedevice, url, wificonnect, bleconnect;
 import 'dart:typed_data';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -166,7 +167,7 @@ class _DisplayRouteScreenState extends State<DisplayRouteScreen> {
             width: 100,
             child: FloatingActionButton(
               onPressed: () async {
-                await _sendRouteToBluetooth();
+                await _sendRouteToBoard();
               },
               backgroundColor: Colors.red[400],
               child: const Icon(Icons.bluetooth, color: Colors.white),
@@ -177,22 +178,40 @@ class _DisplayRouteScreenState extends State<DisplayRouteScreen> {
     );
   }
 
-  Future<void> _sendRouteToBluetooth() async {
+  Future<void> _sendRouteToBoard() async {
     List<int> selectedHolds = _getSelectedHolds();
-    if (thedevice?.isConnected ?? false) {
-      debugPrint("attempting write to ${(thedevice?.advName.toString())!}");
-      debugPrint("and it looks like this ${thedevice!}");
-      Uint8List bytearray = Uint8List.fromList(selectedHolds);
-      List<BluetoothService> services = await thedevice!.discoverServices();
-      for (BluetoothService service in services) {
-        print("report service ${service.uuid}");
-        if (service.uuid.toString() == "5c5bfdde-78e6-40e8-a009-831a927be6cc") {
-          service.characteristics.first.write(bytearray);
-          print("done writing");
+    if (bleconnect && !wificonnect) {
+      try {
+        if (!(thedevice?.isConnected ?? false)) {
+          print("reconnecting disconnected device");
+          thedevice!.connect(autoConnect: false);
         }
+        print("attempting write to ${(thedevice?.advName.toString())!}");
+        print("and it looks like this ${thedevice!}");
+        Uint8List bytearray = Uint8List.fromList(selectedHolds);
+        List<BluetoothService> services = await thedevice!.discoverServices();
+        for (BluetoothService service in services) {
+          print("report service ${service.uuid}");
+          if (service.uuid.toString() ==
+              "5c5bfdde-78e6-40e8-a009-831a927be6cc") {
+            service.characteristics.first.write(bytearray);
+            print("done writing");
+          }
+        }
+      } catch (e) {
+        print("no device to write to, placeholder error");
+      }
+    } else if (!bleconnect && wificonnect) {
+      try {
+        Response response = await post(
+          Uri.parse(url!),
+          body: selectedHolds,
+        );
+      } catch (e) {
+        print('Error sending POST request: $e');
       }
     } else {
-      print("no device to write to, placeholder error");
+      print('No board connected');
     }
   }
 

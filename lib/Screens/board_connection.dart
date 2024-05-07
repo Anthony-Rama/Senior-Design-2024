@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:mobileapp/platforms/sidemenu.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:http/http.dart';
 import 'dart:async';
 
 BluetoothDevice? thedevice;
+String? url;
+bool bleconnect = false;
+bool wificonnect = false;
 
 class BoardConnect extends StatefulWidget {
   const BoardConnect({super.key});
@@ -72,7 +76,6 @@ class _BoardConnectState extends State<BoardConnect> {
           children: [
             ElevatedButton(
               onPressed: () async {
-                //ANDREW WORK HERE
                 //await FlutterBluePlus.turnOn();
 
                 debugPrint("on pressed enter");
@@ -85,11 +88,33 @@ class _BoardConnectState extends State<BoardConnect> {
                   debugPrint("connecting device");
                   await connectdevice();
                 }
+                wificonnect = false;
+                bleconnect = true;
               },
               style: ElevatedButton.styleFrom(backgroundColor: Colors.red[400]),
               child: const Text('Connect to BellBoard',
                   style: TextStyle(color: Colors.white)),
             ),
+            ElevatedButton(
+              onPressed: () async {
+                print("connecting with wifi");
+                url = 'http://10.26.128.80:5000'; // Replace with your Raspberry Pi's IP address
+                try {
+                  Response response = await post(
+                    Uri.parse(url!),
+                    body: 'Test Connection',
+                  );
+                  bleconnect = false;
+                  wificonnect = true;
+                } catch (e) {
+                  print('Error sending POST request: $e');
+                }
+              },
+              style:
+                  ElevatedButton.styleFrom(backgroundColor: Colors.blue[600]),
+              child: const Text('Connect with WiFi',
+                  style: TextStyle(color: Colors.white)),
+            )
           ],
         ),
       ),

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // Import FirebaseAuth
 import 'package:mobileapp/Screens/preset.dart';
+import 'package:http/http.dart';
+import 'board_connection.dart' show thedevice, url, wificonnect, bleconnect;
 import 'dart:typed_data';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
@@ -67,28 +69,40 @@ class _PresetDisplayScreenState extends State<PresetDisplayScreen> {
     }
   }
 
-  Future<void> sendHoldsViaBluetooth(List<int> holds) async {
-    try {
-      BluetoothDevice? thedevice; // Define your Bluetooth device here
-
-      if (thedevice?.isConnected ?? false) {
-        debugPrint("attempting write to ${(thedevice?.advName.toString())!}");
-        debugPrint("and it looks like this ${thedevice!}");
-        Uint8List bytearray = Uint8List.fromList(holds);
-        List<BluetoothService> services = await thedevice.discoverServices();
+  Future<void> sendHoldsViaBoard(List<int> hold) async {
+    List<int> selectedHolds = hold;
+    if (bleconnect && !wificonnect) {
+      try {
+        if (!(thedevice?.isConnected ?? false)) {
+          print("reconnecting disconnected device");
+          await thedevice!.connect(autoConnect: false);
+        }
+        print("attempting write to ${(thedevice?.advName.toString())!}");
+        print("and it looks like this ${thedevice!}");
+        Uint8List bytearray = Uint8List.fromList(selectedHolds);
+        List<BluetoothService> services = await thedevice!.discoverServices();
         for (BluetoothService service in services) {
           print("report service ${service.uuid}");
           if (service.uuid.toString() ==
               "5c5bfdde-78e6-40e8-a009-831a927be6cc") {
-            await service.characteristics.first.write(bytearray);
+            service.characteristics.first.write(bytearray);
             print("done writing");
           }
         }
-      } else {
+      } catch (e) {
         print("no device to write to, placeholder error");
       }
-    } catch (error) {
-      print("Error sending data via Bluetooth: $error");
+    } else if (!bleconnect && wificonnect) {
+      try {
+        Response response = await post(
+          Uri.parse(url!),
+          body: selectedHolds,
+        );
+      } catch (e) {
+        print('Error sending POST request: $e');
+      }
+    } else {
+      print('No board connected');
     }
   }
 
@@ -220,7 +234,7 @@ class _PresetDisplayScreenState extends State<PresetDisplayScreen> {
             width: 100,
             child: FloatingActionButton(
               onPressed: () {
-                sendHoldsViaBluetooth(widget.route.holds);
+                sendHoldsViaBoard(widget.route.holds);
                 // Add your action for the right button
               },
               //mini: true,
