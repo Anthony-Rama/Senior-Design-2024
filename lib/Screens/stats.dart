@@ -79,7 +79,7 @@ class _StatsState extends State<Stats> {
         ),
       ),
       body: completedRouteNames.isEmpty
-        ? Center(
+        ? const Center(
             child: Text(
               'No completed routes found.',
               style: TextStyle(fontSize: 18.0),
@@ -94,7 +94,7 @@ class _StatsState extends State<Stats> {
           return ListTile(
             title: Text(
               routeName['routeName']!,
-              style: TextStyle(color: Colors.black),
+              style: const TextStyle(color: Colors.black),
               /* children: [
                   Expanded(
                     child: Container(

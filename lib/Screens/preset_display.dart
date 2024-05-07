@@ -226,10 +226,10 @@ class _PresetDisplayScreenState extends State<PresetDisplayScreen> {
               },
               //mini: true,
               backgroundColor: Colors.red[400],
-              child: Text("COMPLETED", style: TextStyle(color: Colors.white)),
+              child: const Text("COMPLETED", style: TextStyle(color: Colors.white)),
             ),
           ),
-          SizedBox(width: 16), // Add some space between the buttons
+          const SizedBox(width: 16), // Add some space between the buttons
           SizedBox(
             width: 100,
             child: FloatingActionButton(
@@ -239,7 +239,7 @@ class _PresetDisplayScreenState extends State<PresetDisplayScreen> {
               },
               //mini: true,
               backgroundColor: Colors.red[400],
-              child: Text("SEND", style: TextStyle(color: Colors.white)),
+              child: const Text("SEND", style: TextStyle(color: Colors.white)),
             ),
           ),
         ],
