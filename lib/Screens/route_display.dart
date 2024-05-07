@@ -158,10 +158,10 @@ class _DisplayRouteScreenState extends State<DisplayRouteScreen> {
                 _updateCompletedRouteNames(widget.routeName);
               },
               backgroundColor: Colors.red[400],
-              child: Text("COMPLETED", style: TextStyle(color: Colors.white)),
+              child: const Text("COMPLETED", style: TextStyle(color: Colors.white)),
             ),
           ),
-          SizedBox(width: 16),
+          const SizedBox(width: 16),
           SizedBox(
             width: 100,
             child: FloatingActionButton(

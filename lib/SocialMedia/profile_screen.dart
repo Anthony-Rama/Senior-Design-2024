@@ -236,7 +236,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           itemCount: docs.length,
           itemBuilder: (context, index) {
-            var doc = docs[index].data() as Map<String, dynamic>;
+            var doc = docs[index].data();
             // Assuming 'imageUrl' is the field where the image URL is stored
             String postImageUrl =
                 doc['imageUrl'] as String? ?? 'https://via.placeholder.com/150';
