@@ -99,6 +99,17 @@ class Leaderboards extends StatelessWidget {
 class GlobalLeaderboard extends StatelessWidget {
   const GlobalLeaderboard({super.key});
 
+  // Fetch usernames from the 'users' collection in Firestore bc I didnt wanna modify the other file
+  Future<Map<String, String>> fetchUsernames() async {
+    var usersSnapshot =
+        await FirebaseFirestore.instance.collection('users').get();
+    Map<String, String> usernames = {};
+    for (var doc in usersSnapshot.docs) {
+      usernames[doc.id] = doc['username'];
+    }
+    return usernames;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -114,41 +125,37 @@ class GlobalLeaderboard extends StatelessWidget {
               Navigator.pop(context);
             },
           )),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const SizedBox(
-              width: double.infinity,
-              height: 10,
-            ),
-            Expanded(
-              child: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection('completedroutes')
-                    .orderBy('completedRoutes', descending: true)
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  final users = snapshot.data!.docs;
-                  return ListView.separated(
-                    itemCount: users.length,
-                    separatorBuilder: (context, index) => const Divider(),
-                    itemBuilder: (context, index) {
-                      final user = users[index];
-                      return ListTile(
-                        title: Text(user.id),
-                        trailing: Text('${user['completedRoutes']} routes'),
-                      );
-                    },
+      body: FutureBuilder<Map<String, String>>(
+        future: fetchUsernames(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          var usernames = snapshot.data!;
+          return StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection('completedroutes')
+                .orderBy('completedRoutes', descending: true)
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              final users = snapshot.data!.docs;
+              return ListView.separated(
+                itemCount: users.length,
+                separatorBuilder: (context, index) => const Divider(),
+                itemBuilder: (context, index) {
+                  final user = users[index];
+                  return ListTile(
+                    title: Text(usernames[user.id] ?? 'Unknown'),
+                    trailing: Text('${user['completedRoutes']} routes'),
                   );
                 },
-              ),
-            ),
-          ],
-        ),
+              );
+            },
+          );
+        },
       ),
     );
   }
