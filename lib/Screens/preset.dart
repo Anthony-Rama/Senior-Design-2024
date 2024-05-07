@@ -1,99 +1,129 @@
 import 'package:flutter/material.dart';
 import 'package:mobileapp/platforms/sidemenu.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'preset_display.dart';
 
-class ListItem {
-  final String title;
-  String selectedOption;
-  final List<String> dropdownOptions;
+class PresetRoute {
+  final String id;
+  final String name;
+  final String difficulty;
+  final List<int> holds; // Add holds list here
 
-  ListItem({
-    required this.title,
-    required this.selectedOption,
-    required this.dropdownOptions,
+  PresetRoute({
+    required this.id,
+    required this.name,
+    required this.difficulty,
+    required this.holds, // Update constructor to include holds
   });
 }
 
 class PresetScreen extends StatelessWidget {
   PresetScreen({super.key});
 
-  // key to access Scaffold state (for side menu navigation)
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
-    List<ListItem> listItems = [
-      ListItem(
-        title: 'Beginner',
-        selectedOption: 'Option 1',
-        dropdownOptions: ['Option 1', 'Option 2', 'Option 3'],
-      ),
-      ListItem(
-        title: 'Intermediate',
-        selectedOption: 'Option 1',
-        dropdownOptions: ['Option 1', 'Option 2', 'Option 3'],
-      ),
-      ListItem(
-          title: 'Expert',
-          selectedOption: 'Option 1',
-          dropdownOptions: ['Option 1', 'Option 2', 'Option 3'])
-    ];
-
-    return MaterialApp(
-      home: Scaffold(
-        key: _scaffoldKey,
-        appBar: AppBar(
-          title: const Text(
-            'PRESET ROUTES',
-            style: TextStyle(color: Colors.white),
-          ),
-          backgroundColor: Colors.red[400],
-          leading: IconButton(
-            icon: const Icon(Icons.menu, color: Colors.white),
-            onPressed: () {
-              // open drawer using key
-              _scaffoldKey.currentState?.openDrawer();
-            },
-          ),
+    return Scaffold(
+      key: _scaffoldKey,
+      appBar: AppBar(
+        title: const Text(
+          'PRESET ROUTES',
+          style: TextStyle(color: Colors.white),
         ),
-        drawer: const sideMenu(),
-        body: ListView.builder(
-          itemCount: listItems.length,
-          itemBuilder: (BuildContext context, int index) {
-            return DropdownListItem(listItem: listItems[index]);
+        backgroundColor: Colors.red[400],
+        leading: IconButton(
+          icon: const Icon(Icons.menu, color: Colors.white),
+          onPressed: () {
+            _scaffoldKey.currentState?.openDrawer();
           },
         ),
       ),
+      body: FutureBuilder<List<DocumentSnapshot>>(
+        future: fetchPresetDocuments(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text('No preset routes available.'));
+          } else {
+            return ListView.builder(
+              itemCount: snapshot.data!.length,
+              itemBuilder: (context, index) {
+                final document = snapshot.data![index];
+                return DropdownTile(document: document);
+              },
+            );
+          }
+        },
+      ),
+      drawer: const sideMenu(),
     );
+  }
+
+  Future<List<DocumentSnapshot>> fetchPresetDocuments() async {
+    try {
+      QuerySnapshot querySnapshot =
+          await FirebaseFirestore.instance.collection('presets').get();
+      return querySnapshot.docs;
+    } catch (e) {
+      print('Error fetching preset documents: $e');
+      return [];
+    }
   }
 }
 
-class DropdownListItem extends StatefulWidget {
-  final ListItem listItem;
+class DropdownTile extends StatelessWidget {
+  final DocumentSnapshot document;
 
-  const DropdownListItem({super.key, required this.listItem});
+  const DropdownTile({super.key, required this.document});
 
-  @override
-  _DropdownListItemState createState() => _DropdownListItemState();
-}
-
-class _DropdownListItemState extends State<DropdownListItem> {
   @override
   Widget build(BuildContext context) {
     return ExpansionTile(
       title: Text(
-        widget.listItem.title,
+        document.id.toUpperCase(),
         style: TextStyle(fontWeight: FontWeight.w600, color: Colors.red[400]),
       ),
-      children: widget.listItem.dropdownOptions.map((option) {
-        return ListTile(
-          title: Text(option),
-          onTap: () {
-            setState(() {
-              widget.listItem.selectedOption = option;
-            });
+      children: [
+        ...List.generate(
+          3,
+          (index) {
+            final fieldName = '${document.id}${index + 1}';
+            final holdsArray = List<int>.from(document[fieldName] ?? []);
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ListTile(
+                  title: Text(
+                    fieldName,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PresetDisplayScreen(
+                          route: PresetRoute(
+                            id: '$index',
+                            name: fieldName,
+                            difficulty: document.id,
+                            holds: holdsArray, // Populate holds with the array
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                  //child: Text(fieldName),
+                ),
+                //Divider(),
+              ],
+            );
           },
-        );
-      }).toList(),
+        ),
+      ],
     );
   }
 }

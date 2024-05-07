@@ -5,14 +5,21 @@ import 'dart:typed_data';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class CustomRouteGridScreen extends StatefulWidget {
-  const CustomRouteGridScreen({super.key});
+class DisplayRouteScreen extends StatefulWidget {
+  final String routeName;
+  final String username;
+
+  const DisplayRouteScreen({
+    required this.routeName,
+    required this.username,
+    super.key,
+  });
 
   @override
-  _CustomRouteGridScreenState createState() => _CustomRouteGridScreenState();
+  _DisplayRouteScreenState createState() => _DisplayRouteScreenState();
 }
 
-class _CustomRouteGridScreenState extends State<CustomRouteGridScreen> {
+class _DisplayRouteScreenState extends State<DisplayRouteScreen> {
   List<List<bool>> gridState = List.generate(9, (_) => List.filled(5, false));
 
   // holds coordinates on the climbing board image relative to the image size
@@ -29,6 +36,40 @@ class _CustomRouteGridScreenState extends State<CustomRouteGridScreen> {
         return Offset(20 + j * 60, 20 + i * 40); // values can be adjusted here
       });
     });
+
+    _fetchHoldsFromFirebase();
+  }
+
+  Future<void> _fetchHoldsFromFirebase() async {
+    try {
+      DocumentSnapshot routeSnapshot = await FirebaseFirestore.instance
+          .collection('routes')
+          .where('routeName', isEqualTo: widget.routeName)
+          .limit(1)
+          .get()
+          .then((value) => value.docs.first);
+
+      List<int> holds = List<int>.from(routeSnapshot['holds']);
+
+      _updateGridState(holds);
+    } catch (e) {
+      print('Error fetching holds: $e');
+    }
+  }
+
+  void _updateGridState(List<int> holds) {
+    for (int i = 0; i < gridState.length; i++) {
+      for (int j = 0; j < gridState[i].length; j++) {
+        gridState[i][j] = false;
+      }
+    }
+
+    for (int holdIndex in holds) {
+      int rowIndex = 8 - (holdIndex ~/ 5);
+      int colIndex = holdIndex % 5;
+      gridState[rowIndex][colIndex] = true;
+    }
+    setState(() {});
   }
 
   @override
@@ -109,64 +150,35 @@ class _CustomRouteGridScreenState extends State<CustomRouteGridScreen> {
       floatingActionButton: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          FloatingActionButton(
-            onPressed: () async {
-              await _showNameRouteDialog();
-            },
-            backgroundColor: Colors.red[400],
-            child: const Icon(Icons.save, color: Colors.white),
+          SizedBox(
+            width: 100,
+            child: FloatingActionButton(
+              onPressed: () {
+                _updateCompletedRoutes();
+                _updateCompletedRouteNames(widget.routeName);
+              },
+              backgroundColor: Colors.red[400],
+              child: Text("COMPLETED", style: TextStyle(color: Colors.white)),
+            ),
           ),
-          const SizedBox(width: 16),
-          FloatingActionButton(
-            onPressed: () async {
-              await _sendRouteToBluetooth();
-            },
-            backgroundColor: Colors.red[400],
-            child: const Icon(Icons.bluetooth, color: Colors.white),
+          SizedBox(width: 16),
+          SizedBox(
+            width: 100,
+            child: FloatingActionButton(
+              onPressed: () async {
+                await _sendRouteToBluetooth();
+              },
+              backgroundColor: Colors.red[400],
+              child: const Icon(Icons.bluetooth, color: Colors.white),
+            ),
           ),
         ],
       ),
     );
   }
 
-  Future<void> _showNameRouteDialog() async {
-    return showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Name Your Route'),
-          content: TextFormField(
-            controller: _routeNameController,
-            decoration: const InputDecoration(
-              labelText: 'Route Name',
-              hintText: 'Enter a name for your route',
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('CANCEL'),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                Navigator.of(context).pop();
-                await saveRouteToFirestore(
-                    _routeNameController.text, _getSelectedHolds());
-              },
-              child: const Text('SAVE'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   Future<void> _sendRouteToBluetooth() async {
     List<int> selectedHolds = _getSelectedHolds();
-    // Assuming you have an instance of FlutterBlue
-    // and thedevice variable correctly set up
     if (thedevice?.isConnected ?? false) {
       debugPrint("attempting write to ${(thedevice?.advName.toString())!}");
       debugPrint("and it looks like this ${thedevice!}");
@@ -184,38 +196,55 @@ class _CustomRouteGridScreenState extends State<CustomRouteGridScreen> {
     }
   }
 
-  Future<void> saveRouteToFirestore(
-      String routeName, List<int> selectedHolds) async {
+  Future<void> _updateCompletedRoutes() async {
     try {
-      User? user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        FirebaseFirestore firestore = FirebaseFirestore.instance;
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser != null) {
+        final currentUserID = currentUser.uid;
 
-        String routeId = firestore.collection('routes').doc().id;
+        final userDoc = FirebaseFirestore.instance
+            .collection('completedroutes')
+            .doc(currentUserID);
 
-        DocumentSnapshot userSnapshot =
-            await firestore.collection('users').doc(user.uid).get();
-        Map<String, dynamic>? userData =
-            userSnapshot.data() as Map<String, dynamic>?;
+        final userSnapshot = await userDoc.get();
+        int completedRoutes = 1;
+        if (userSnapshot.exists) {
+          final userData = userSnapshot.data();
+          if (userData != null && userData.containsKey('completedRoutes')) {
+            completedRoutes = userData['completedRoutes'] + 1;
+          }
+        }
 
-        String? username = userData?['username'];
-
-        // route model
-        Map<String, dynamic> routeData = {
-          'userId': user.uid,
-          'username': username,
-          'routeName': routeName,
-          'holds': selectedHolds,
-        };
-
-        await firestore.collection('routes').doc(routeId).set(routeData);
-
-        print('Route saved to Firestore with ID: $routeId');
+        await userDoc
+            .set({'completedRoutes': completedRoutes}, SetOptions(merge: true));
       } else {
-        print('User is not authenticated.');
+        print('User not authenticated.');
       }
-    } catch (e) {
-      print('Error saving route: $e');
+    } catch (error) {
+      print('Error updating completedRoutes: $error');
+    }
+  }
+
+  Future<void> _updateCompletedRouteNames(String routeName) async {
+    try {
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser != null) {
+        final currentUserID = currentUser.uid;
+
+        final routeDoc = FirebaseFirestore.instance
+            .collection('completedroutes')
+            .doc(currentUserID);
+
+        await routeDoc.update({
+          'completedRouteNames': FieldValue.arrayUnion([routeName])
+        });
+
+        print('Route name added to completedRouteNames list.');
+      } else {
+        print('User not authenticated.');
+      }
+    } catch (error) {
+      print('Error updating completedRouteNames: $error');
     }
   }
 
@@ -237,7 +266,6 @@ class _CustomRouteGridScreenState extends State<CustomRouteGridScreen> {
         }
       }
     }
-    print('Selected Holds: $selectedHolds');
     return selectedHolds;
   }
 }

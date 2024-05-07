@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobileapp/Screens/board_connection.dart';
 import 'package:mobileapp/Screens/preset.dart';
 import 'package:mobileapp/Screens/custom_routes.dart';
 import 'package:mobileapp/Screens/stats.dart';
@@ -40,6 +41,20 @@ class sideMenu extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                     builder: (context) => const MobileScreenLayout()),
+              );
+            },
+          ),
+          const Divider(),
+          //change text to green when connected to board
+          ListTile(
+            title: const Text('Connect to BellBoard',
+                style: TextStyle(color: Colors.red)),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const BoardConnect(),
+                ),
               );
             },
           ),
