@@ -74,7 +74,7 @@ class _BoardConnectState extends State<BoardConnect> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ElevatedButton(
+            /*ElevatedButton(
               onPressed: () async {
                 //await FlutterBluePlus.turnOn();
 
@@ -94,11 +94,12 @@ class _BoardConnectState extends State<BoardConnect> {
               style: ElevatedButton.styleFrom(backgroundColor: Colors.red[400]),
               child: const Text('Connect to BellBoard',
                   style: TextStyle(color: Colors.white)),
-            ),
+            ), */
             ElevatedButton(
               onPressed: () async {
                 print("connecting with wifi");
-                url = 'http://10.26.128.80:5000'; // Replace with your Raspberry Pi's IP address
+                url =
+                    'http://10.26.128.80:5000'; // Replace with your Raspberry Pi's IP address
                 try {
                   Response response = await post(
                     Uri.parse(url!),
@@ -110,8 +111,7 @@ class _BoardConnectState extends State<BoardConnect> {
                   print('Error sending POST request: $e');
                 }
               },
-              style:
-                  ElevatedButton.styleFrom(backgroundColor: Colors.blue[600]),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.red[400]),
               child: const Text('Connect with WiFi',
                   style: TextStyle(color: Colors.white)),
             )

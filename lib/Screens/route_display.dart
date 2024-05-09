@@ -159,7 +159,8 @@ class _DisplayRouteScreenState extends State<DisplayRouteScreen> {
                 _updateCompletedRouteNames(widget.routeName);
               },
               backgroundColor: Colors.red[400],
-              child: const Text("COMPLETED", style: TextStyle(color: Colors.white)),
+              child: const Text("COMPLETED",
+                  style: TextStyle(color: Colors.white)),
             ),
           ),
           const SizedBox(width: 16),
@@ -170,7 +171,7 @@ class _DisplayRouteScreenState extends State<DisplayRouteScreen> {
                 await _sendRouteToBoard();
               },
               backgroundColor: Colors.red[400],
-              child: const Icon(Icons.bluetooth, color: Colors.white),
+              child: const Icon(Icons.cell_wifi, color: Colors.white),
             ),
           ),
         ],

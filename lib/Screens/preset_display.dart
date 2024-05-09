@@ -27,17 +27,22 @@ class _PresetDisplayScreenState extends State<PresetDisplayScreen> {
   }
 
   void _updateGridState(List<int> holds) {
-    // Reset grid state
     for (int i = 0; i < gridState.length; i++) {
       for (int j = 0; j < gridState[i].length; j++) {
         gridState[i][j] = false;
       }
     }
 
-    // Set holds in grid state
     for (int holdIndex in holds) {
       int rowIndex = 8 - (holdIndex ~/ 5);
-      int colIndex = holdIndex % 5;
+      int colIndex;
+
+      if (rowIndex % 2 == 0) {
+        colIndex = holdIndex % 5;
+      } else {
+        colIndex = 4 - (holdIndex % 5);
+      }
+
       gridState[rowIndex][colIndex] = true;
     }
     setState(() {});
@@ -226,7 +231,8 @@ class _PresetDisplayScreenState extends State<PresetDisplayScreen> {
               },
               //mini: true,
               backgroundColor: Colors.red[400],
-              child: const Text("COMPLETED", style: TextStyle(color: Colors.white)),
+              child: const Text("COMPLETED",
+                  style: TextStyle(color: Colors.white)),
             ),
           ),
           const SizedBox(width: 16), // Add some space between the buttons

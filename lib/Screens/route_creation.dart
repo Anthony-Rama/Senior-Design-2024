@@ -123,7 +123,7 @@ class _CustomRouteGridScreenState extends State<CustomRouteGridScreen> {
               await _sendRouteToBoard();
             },
             backgroundColor: Colors.red[400],
-            child: const Icon(Icons.bluetooth, color: Colors.white),
+            child: const Icon(Icons.cell_wifi, color: Colors.white),
           ),
         ],
       ),
